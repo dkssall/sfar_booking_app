@@ -9,7 +9,7 @@ class SafariBookingApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'سافر',
+        title: 'عاجل | للسفر والحجوزات',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: primary),
