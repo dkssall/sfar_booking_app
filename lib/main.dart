@@ -14,9 +14,8 @@ class SafariBookingApp extends StatelessWidget {
       title: 'سافر',
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: 'sans',
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
+          seedColor: const Color(0xFF3949AB),
         ),
       ),
       home: const HomePage(),
@@ -33,7 +32,6 @@ class HomePage extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: const Color(0xFFF7F8FC),
-
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -52,14 +50,11 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              // الترحيب
               const Text(
                 'مرحباً بك 👋',
                 style: TextStyle(
@@ -67,9 +62,7 @@ class HomePage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               const Text(
                 'خطط لرحلتك القادمة بسهولة',
                 style: TextStyle(
@@ -77,10 +70,8 @@ class HomePage extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-
               const SizedBox(height: 25),
 
-              // بطاقة البحث
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -96,7 +87,6 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     const Text(
                       'أين تريد أن تذهب؟',
                       style: TextStyle(
@@ -105,9 +95,7 @@ class HomePage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 8),
-
                     const Text(
                       'ابحث عن رحلتك واحجز بسهولة',
                       style: TextStyle(
@@ -115,9 +103,7 @@ class HomePage extends StatelessWidget {
                         fontSize: 15,
                       ),
                     ),
-
                     const SizedBox(height: 20),
-
                     SizedBox(
                       width: double.infinity,
                       height: 52,
@@ -153,33 +139,28 @@ class HomePage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 15),
 
-              // الخدمات
               Row(
                 children: [
                   Expanded(
-                    child: _ServiceCard(
+                    child: ServiceCard(
                       icon: Icons.flight_takeoff,
                       title: 'الرحلات',
-                      onTap: () {},
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _ServiceCard(
+                    child: ServiceCard(
                       icon: Icons.hotel,
                       title: 'الفنادق',
-                      onTap: () {},
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _ServiceCard(
+                    child: ServiceCard(
                       icon: Icons.directions_car,
                       title: 'السيارات',
-                      onTap: () {},
                     ),
                   ),
                 ],
@@ -194,26 +175,23 @@ class HomePage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
               const SizedBox(height: 15),
 
-              _DestinationCard(
+              DestinationCard(
                 city: 'دبي',
                 country: 'الإمارات العربية المتحدة',
                 icon: Icons.location_city,
               ),
-
               const SizedBox(height: 12),
 
-              _DestinationCard(
+              DestinationCard(
                 city: 'القاهرة',
                 country: 'مصر',
                 icon: Icons.account_balance,
               ),
-
               const SizedBox(height: 12),
 
-              _DestinationCard(
+              DestinationCard(
                 city: 'إسطنبول',
                 country: 'تركيا',
                 icon: Icons.travel_explore,
@@ -223,8 +201,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-
-        // القائمة السفلية
         bottomNavigationBar: NavigationBar(
           selectedIndex: 0,
           destinations: const [
@@ -250,21 +226,20 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _ServiceCard extends StatelessWidget {
+class ServiceCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final VoidCallback onTap;
 
-  const _ServiceCard({
+  const ServiceCard({
+    super.key,
     required this.icon,
     required this.title,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: () {},
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -304,12 +279,13 @@ class _ServiceCard extends StatelessWidget {
   }
 }
 
-class _DestinationCard extends StatelessWidget {
+class DestinationCard extends StatelessWidget {
   final String city;
   final String country;
   final IconData icon;
 
-  const _DestinationCard({
+  const DestinationCard({
+    super.key,
     required this.city,
     required this.country,
     required this.icon,
@@ -346,5 +322,36 @@ class _DestinationCard extends StatelessWidget {
               size: 30,
             ),
           ),
-
-          const SizedBox(width
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  city,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  country,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.arrow_back_ios_new,
+            size: 18,
+            color: Colors.grey,
+          ),
+        ],
+      ),
+    );
+  }
+}
