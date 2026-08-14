@@ -7,7 +7,7 @@ void main() {
 class SafariBookingApp extends StatelessWidget {
   const SafariBookingApp({super.key});
 
-  static const primary = Color(0xFF3949AB);
+  static const Color primary = Color(0xFF3949AB);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,9 @@ class SafariBookingApp extends StatelessWidget {
       title: 'سافر',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: primary),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: primary,
+        ),
         scaffoldBackgroundColor: const Color(0xFFF7F8FC),
       ),
       home: const HomePage(),
@@ -24,15 +26,17 @@ class SafariBookingApp extends StatelessWidget {
   }
 }
 
-// ==================== الرئيسية ====================
+// ===================== الرئيسية =====================
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  void open(BuildContext context, Widget page) {
+  void openPage(BuildContext context, Widget page) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => page),
+      MaterialPageRoute(
+        builder: (_) => page,
+      ),
     );
   }
 
@@ -41,21 +45,29 @@ class HomePage extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        backgroundColor: const Color(0xFFF7F8FC),
+
         appBar: AppBar(
+          backgroundColor: Colors.white,
           centerTitle: true,
           title: const Text(
             'سافر',
             style: TextStyle(
-              fontSize: 25,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.notifications_none),
               onPressed: () {
-                open(context, const NotificationsPage());
+                openPage(
+                  context,
+                  const NotificationsPage(),
+                );
               },
+              icon: const Icon(
+                Icons.notifications_none,
+              ),
             ),
           ],
         ),
@@ -63,13 +75,14 @@ class HomePage extends StatelessWidget {
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
 
               const Text(
                 'مرحباً بك 👋',
                 style: TextStyle(
-                  fontSize: 27,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -86,7 +99,7 @@ class HomePage extends StatelessWidget {
 
               const SizedBox(height: 25),
 
-              // مربع البحث
+              // البحث
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -97,10 +110,12 @@ class HomePage extends StatelessWidget {
                       Color(0xFF5C6BC0),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius:
+                      BorderRadius.circular(22),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
 
                     const Text(
@@ -126,23 +141,38 @@ class HomePage extends StatelessWidget {
 
                     SizedBox(
                       width: double.infinity,
-                      height: 55,
+                      height: 52,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          open(context, const SearchPage());
+                          openPage(
+                            context,
+                            const SearchPage(),
+                          );
                         },
-                        icon: const Icon(Icons.search),
+                        icon: const Icon(
+                          Icons.search,
+                        ),
                         label: const Text(
                           'البحث عن رحلة',
                           style: TextStyle(
                             fontSize: 17,
-                            fontWeight: FontWeight.bold,
+                            fontWeight:
+                                FontWeight.bold,
                           ),
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
+                        style:
+                            ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.white,
                           foregroundColor:
                               SafariBookingApp.primary,
+                          shape:
+                              RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(
+                              14,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -155,7 +185,7 @@ class HomePage extends StatelessWidget {
               const Text(
                 'الخدمات',
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -167,34 +197,45 @@ class HomePage extends StatelessWidget {
 
                   Expanded(
                     child: ServiceCard(
-                      icon: Icons.flight_takeoff,
+                      icon:
+                          Icons.flight_takeoff,
                       title: 'الرحلات',
                       onTap: () {
-                        open(context, const FlightsPage());
+                        openPage(
+                          context,
+                          const FlightsPage(),
+                        );
                       },
                     ),
                   ),
 
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
 
                   Expanded(
                     child: ServiceCard(
                       icon: Icons.hotel,
                       title: 'الفنادق',
                       onTap: () {
-                        open(context, const HotelsPage());
+                        openPage(
+                          context,
+                          const HotelsPage(),
+                        );
                       },
                     ),
                   ),
 
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
 
                   Expanded(
                     child: ServiceCard(
-                      icon: Icons.directions_car,
+                      icon:
+                          Icons.directions_car,
                       title: 'السيارات',
                       onTap: () {
-                        open(context, const CarsPage());
+                        openPage(
+                          context,
+                          const CarsPage(),
+                        );
                       },
                     ),
                   ),
@@ -206,7 +247,7 @@ class HomePage extends StatelessWidget {
               const Text(
                 'رحلات مقترحة',
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -215,14 +256,16 @@ class HomePage extends StatelessWidget {
 
               DestinationCard(
                 city: 'دبي',
-                country: 'الإمارات العربية المتحدة',
+                country:
+                    'الإمارات العربية المتحدة',
                 icon: Icons.location_city,
                 onTap: () {
-                  open(
+                  openPage(
                     context,
                     const DestinationPage(
                       city: 'دبي',
-                      country: 'الإمارات العربية المتحدة',
+                      country:
+                          'الإمارات العربية المتحدة',
                     ),
                   );
                 },
@@ -235,7 +278,7 @@ class HomePage extends StatelessWidget {
                 country: 'مصر',
                 icon: Icons.account_balance,
                 onTap: () {
-                  open(
+                  openPage(
                     context,
                     const DestinationPage(
                       city: 'القاهرة',
@@ -252,7 +295,7 @@ class HomePage extends StatelessWidget {
                 country: 'تركيا',
                 icon: Icons.travel_explore,
                 onTap: () {
-                  open(
+                  openPage(
                     context,
                     const DestinationPage(
                       city: 'إسطنبول',
@@ -268,36 +311,55 @@ class HomePage extends StatelessWidget {
         ),
 
         // القائمة السفلية
-        bottomNavigationBar: NavigationBar(
+        bottomNavigationBar:
+            NavigationBar(
           selectedIndex: 0,
-          onDestinationSelected: (index) {
 
+          onDestinationSelected: (index) {
             if (index == 1) {
-              open(context, const BookingsPage());
+              openPage(
+                context,
+                const BookingsPage(),
+              );
             }
 
             if (index == 2) {
-              open(context, const AccountPage());
+              openPage(
+                context,
+                const AccountPage(),
+              );
             }
           },
 
           destinations: const [
 
             NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
+              icon: Icon(
+                Icons.home_outlined,
+              ),
+              selectedIcon: Icon(
+                Icons.home,
+              ),
               label: 'الرئيسية',
             ),
 
             NavigationDestination(
-              icon: Icon(Icons.bookmark_border),
-              selectedIcon: Icon(Icons.bookmark),
+              icon: Icon(
+                Icons.bookmark_border,
+              ),
+              selectedIcon: Icon(
+                Icons.bookmark,
+              ),
               label: 'حجوزاتي',
             ),
 
             NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
+              icon: Icon(
+                Icons.person_outline,
+              ),
+              selectedIcon: Icon(
+                Icons.person,
+              ),
               label: 'حسابي',
             ),
           ],
@@ -307,7 +369,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// ==================== بطاقة الخدمة ====================
+// ===================== بطاقة الخدمة =====================
 
 class ServiceCard extends StatelessWidget {
   final IconData icon;
@@ -325,26 +387,36 @@ class ServiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-
+      borderRadius:
+          BorderRadius.circular(18),
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 5,
+        padding:
+            const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 8,
         ),
-
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius:
+              BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset:
+                  const Offset(0, 4),
+            ),
+          ],
         ),
-
         child: Column(
           children: [
 
             Icon(
               icon,
-              size: 34,
-              color: SafariBookingApp.primary,
+              size: 32,
+              color:
+                  SafariBookingApp.primary,
             ),
 
             const SizedBox(height: 10),
@@ -352,8 +424,9 @@ class ServiceCard extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
+                fontWeight:
+                    FontWeight.bold,
                 fontSize: 14,
-                fontWeight: FontWeight.bold,
               ),
             ),
           ],
@@ -363,7 +436,7 @@ class ServiceCard extends StatelessWidget {
   }
 }
 
-// ==================== بطاقة الوجهة ====================
+// ===================== بطاقة الوجهة =====================
 
 class DestinationCard extends StatelessWidget {
   final String city;
@@ -383,31 +456,42 @@ class DestinationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-
+      borderRadius:
+          BorderRadius.circular(18),
       child: Container(
-        padding: const EdgeInsets.all(18),
-
+        width: double.infinity,
+        padding:
+            const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius:
+              BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset:
+                  const Offset(0, 3),
+            ),
+          ],
         ),
-
         child: Row(
           children: [
 
             Container(
               width: 55,
               height: 55,
-
               decoration: BoxDecoration(
-                color: const Color(0xFFE8EAF6),
-                borderRadius: BorderRadius.circular(15),
+                color:
+                    const Color(0xFFE8EAF6),
+                borderRadius:
+                    BorderRadius.circular(15),
               ),
-
               child: Icon(
                 icon,
-                color: SafariBookingApp.primary,
+                color:
+                    SafariBookingApp.primary,
                 size: 30,
               ),
             ),
@@ -418,23 +502,25 @@ class DestinationCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
-
                 children: [
 
                   Text(
                     city,
                     style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                          FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
 
                   Text(
                     country,
-                    style: const TextStyle(
+                    style:
+                        const TextStyle(
                       color: Colors.grey,
+                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -443,7 +529,7 @@ class DestinationCard extends StatelessWidget {
 
             const Icon(
               Icons.arrow_back_ios_new,
-              size: 17,
+              size: 18,
               color: Colors.grey,
             ),
           ],
@@ -453,50 +539,65 @@ class DestinationCard extends StatelessWidget {
   }
 }
 
-// ==================== البحث ====================
+// ===================== صفحة البحث =====================
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
+    return SimplePage(
       title: 'البحث عن رحلة',
-
       child: Padding(
-        padding: const EdgeInsets.all(20),
-
+        padding:
+            const EdgeInsets.all(20),
         child: Column(
           children: [
 
             const TextField(
-              decoration: InputDecoration(
+              decoration:
+                  InputDecoration(
                 labelText: 'من',
-                hintText: 'مدينة المغادرة',
-                prefixIcon: Icon(Icons.flight_takeoff),
-                border: OutlineInputBorder(),
+                hintText:
+                    'مدينة المغادرة',
+                prefixIcon: Icon(
+                  Icons.flight_takeoff,
+                ),
+                border:
+                    OutlineInputBorder(),
               ),
             ),
 
             const SizedBox(height: 15),
 
             const TextField(
-              decoration: InputDecoration(
+              decoration:
+                  InputDecoration(
                 labelText: 'إلى',
-                hintText: 'مدينة الوصول',
-                prefixIcon: Icon(Icons.flight_land),
-                border: OutlineInputBorder(),
+                hintText:
+                    'مدينة الوصول',
+                prefixIcon: Icon(
+                  Icons.flight_land,
+                ),
+                border:
+                    OutlineInputBorder(),
               ),
             ),
 
             const SizedBox(height: 15),
 
             const TextField(
-              decoration: InputDecoration(
-                labelText: 'تاريخ السفر',
-                hintText: 'اختر التاريخ',
-                prefixIcon: Icon(Icons.calendar_month),
-                border: OutlineInputBorder(),
+              decoration:
+                  InputDecoration(
+                labelText:
+                    'تاريخ السفر',
+                hintText:
+                    'اختر التاريخ',
+                prefixIcon: Icon(
+                  Icons.calendar_month,
+                ),
+                border:
+                    OutlineInputBorder(),
               ),
             ),
 
@@ -505,22 +606,17 @@ class SearchPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               height: 52,
-
               child: ElevatedButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('تم تنفيذ البحث'),
-                    ),
+                  showMessage(
+                    context,
+                    'تم تنفيذ البحث',
                   );
                 },
-
-                icon: const Icon(Icons.search),
-
-                label: const Text(
-                  'بحث',
-                  style: TextStyle(fontSize: 17),
-                ),
+                icon:
+                    const Icon(Icons.search),
+                label:
+                    const Text('بحث'),
               ),
             ),
           ],
@@ -530,19 +626,18 @@ class SearchPage extends StatelessWidget {
   }
 }
 
-// ==================== الرحلات ====================
+// ===================== الرحلات =====================
 
 class FlightsPage extends StatelessWidget {
   const FlightsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
+    return SimplePage(
       title: 'الرحلات',
-
       child: ListView(
-        padding: const EdgeInsets.all(20),
-
+        padding:
+            const EdgeInsets.all(20),
         children: const [
 
           InfoCard(
@@ -552,7 +647,7 @@ class FlightsPage extends StatelessWidget {
                 'ابحث عن الرحلات واختر الرحلة المناسبة لك.',
           ),
 
-          SizedBox(height: 15),
+          SizedBox(height: 12),
 
           InfoCard(
             icon: Icons.schedule,
@@ -566,19 +661,18 @@ class FlightsPage extends StatelessWidget {
   }
 }
 
-// ==================== الفنادق ====================
+// ===================== الفنادق =====================
 
 class HotelsPage extends StatelessWidget {
   const HotelsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
+    return SimplePage(
       title: 'الفنادق',
-
       child: ListView(
-        padding: const EdgeInsets.all(20),
-
+        padding:
+            const EdgeInsets.all(20),
         children: const [
 
           InfoCard(
@@ -588,7 +682,7 @@ class HotelsPage extends StatelessWidget {
                 'اختر الفندق المناسب لرحلتك.',
           ),
 
-          SizedBox(height: 15),
+          SizedBox(height: 12),
 
           InfoCard(
             icon: Icons.star,
@@ -602,29 +696,29 @@ class HotelsPage extends StatelessWidget {
   }
 }
 
-// ==================== السيارات ====================
+// ===================== السيارات =====================
 
 class CarsPage extends StatelessWidget {
   const CarsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
+    return SimplePage(
       title: 'السيارات',
-
       child: ListView(
-        padding: const EdgeInsets.all(20),
-
+        padding:
+            const EdgeInsets.all(20),
         children: const [
 
           InfoCard(
-            icon: Icons.directions_car,
+            icon:
+                Icons.directions_car,
             title: 'تأجير السيارات',
             subtitle:
                 'اختر سيارة تناسب احتياجات رحلتك.',
           ),
 
-          SizedBox(height: 15),
+          SizedBox(height: 12),
 
           InfoCard(
             icon: Icons.location_on,
@@ -638,72 +732,68 @@ class CarsPage extends StatelessWidget {
   }
 }
 
-// ==================== حجوزاتي ====================
+// ===================== حجوزاتي =====================
 
 class BookingsPage extends StatelessWidget {
   const BookingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
+    return SimplePage(
       title: 'حجوزاتي',
-
       child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(30),
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.center,
+          children: const [
 
-          child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.center,
+            Icon(
+              Icons.bookmark_border,
+              size: 75,
+              color:
+                  SafariBookingApp.primary,
+            ),
 
-            children: const [
+            SizedBox(height: 15),
 
-              Icon(
-                Icons.bookmark_border,
-                size: 75,
-                color: SafariBookingApp.primary,
+            Text(
+              'لا توجد حجوزات حالياً',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight:
+                    FontWeight.bold,
               ),
+            ),
 
-              SizedBox(height: 15),
+            SizedBox(height: 8),
 
-              Text(
-                'لا توجد حجوزات حالياً',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+            Text(
+              'ستظهر حجوزاتك هنا بعد إتمام أي حجز.',
+              textAlign:
+                  TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey,
               ),
-
-              SizedBox(height: 8),
-
-              Text(
-                'ستظهر حجوزاتك هنا بعد إتمام أي حجز.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// ==================== الحساب ====================
+// ===================== الحساب =====================
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppPage(
+    return SimplePage(
       title: 'حسابي',
-
       child: ListView(
-        padding: const EdgeInsets.all(20),
-
+        padding:
+            const EdgeInsets.all(20),
         children: [
 
           const CircleAvatar(
@@ -714,121 +804,4 @@ class AccountPage extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 15),
-
-          const Center(
-            child: Text(
-              'حساب المستخدم',
-              style: TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 25),
-
-          ListTile(
-            leading: const Icon(
-              Icons.person_outline,
-            ),
-
-            title: const Text(
-              'الملف الشخصي',
-            ),
-
-            trailing: const Icon(
-              Icons.arrow_back_ios,
-              size: 16,
-            ),
-
-            onTap: () {
-              showMessage(
-                context,
-                'صفحة الملف الشخصي',
-              );
-            },
-          ),
-
-          ListTile(
-            leading: const Icon(
-              Icons.settings_outlined,
-            ),
-
-            title: const Text(
-              'الإعدادات',
-            ),
-
-            trailing: const Icon(
-              Icons.arrow_back_ios,
-              size: 16,
-            ),
-
-            onTap: () {
-              showMessage(
-                context,
-                'صفحة الإعدادات',
-              );
-            },
-          ),
-
-          ListTile(
-            leading: const Icon(
-              Icons.help_outline,
-            ),
-
-            title: const Text(
-              'المساعدة',
-            ),
-
-            trailing: const Icon(
-              Icons.arrow_back_ios,
-              size: 16,
-            ),
-
-            onTap: () {
-              showMessage(
-                context,
-                'صفحة المساعدة',
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ==================== الإشعارات ====================
-
-class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppPage(
-      title: 'الإشعارات',
-
-      child: Center(
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
-
-          children: const [
-
-            Icon(
-              Icons.notifications_none,
-              size: 75,
-              color: SafariBookingApp.primary,
-            ),
-
-            SizedBox(height: 15),
-
-            Text(
-              'لا توجد إشعارات جديدة',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-         
+          const SizedBox(height: 1
