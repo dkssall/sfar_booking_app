@@ -177,7 +177,7 @@ class SearchPage extends StatelessWidget {
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, height: 52, child: ElevatedButton.icon(onPressed: () => showMessage(context, 'تم تنفيذ البحث'), icon: const Icon(Icons.search), label: const Text('بحث'))),
         ]),
-      );
+      ));
 }
 
 class FlightsPage extends StatelessWidget {
