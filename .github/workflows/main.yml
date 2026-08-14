@@ -21,7 +21,9 @@ jobs:
           channel: stable
 
       - name: Create Android project
-        run: flutter create --platforms=android --project-name=safari_booking_app .
+                run: |
+          flutter create --platforms=android --project-name=safari_booking_app .
+          sed -i 's/android:label="[^"]*"/android:label="عاجل | للسفر والحجوزات"/' android/app/src/main/AndroidManifest.xml
 
       - name: Get dependencies
         run: flutter pub get
