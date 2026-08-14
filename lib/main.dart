@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF3949AB), Color(0xFF5C6BC0)]),
+                  gradient: const LinearGradient(colors: [Color(0xFF3949AB), Color(0xFFF5C6C0)]),
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
