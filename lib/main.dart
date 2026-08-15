@@ -349,7 +349,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
   width: double.infinity,
-  height: 75,
+  height: 65,
   decoration: BoxDecoration(
     borderRadius: BorderRadius.circular(18),
     gradient: LinearGradient(colors: gradient),
@@ -363,7 +363,7 @@ class _HomePageState extends State<HomePage> {
     ),
   ),
 ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             Text(
               title,
               textAlign: TextAlign.center,
