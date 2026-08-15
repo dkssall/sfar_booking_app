@@ -318,10 +318,11 @@ subtitle: 'سهلة وسريعة',
   ),
 ],
 ),
+),
 ],
 ),
 );
-}
+          }
 
   Widget _serviceCard({
   required IconData icon,
