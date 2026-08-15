@@ -134,15 +134,10 @@ class _HomePageState extends State<HomePage> {
         height: 270,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
-          gradient: const LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Color(0xFF0877E8),
-              Color(0xFF1459D9),
-              Color(0xFF063BA8),
-            ],
-          ),
+          image: const DecorationImage(
+  image: AssetImage('assets/images/hero_plane.png'),
+  fit: BoxFit.cover,
+),
           boxShadow: [
             BoxShadow(
               color: Colors.blue.withOpacity(.18),
