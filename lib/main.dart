@@ -316,12 +316,12 @@ subtitle: 'سهلة وسريعة',
       Color(0xFFB8D9FF),
     ],
   ),
+],
 ),
-          ],
-        ),
-      ),
-    );
-  }
+],
+),
+);
+}
 
   Widget _serviceCard({
   required IconData icon,
