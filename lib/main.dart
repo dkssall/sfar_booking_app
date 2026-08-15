@@ -326,7 +326,7 @@ class _HomePageState extends State<HomePage> {
       onTap: () => message(title),
       child: Container(
         width: 245,
-        margin: const EdgeInsets.only(left: 12),
+        margin: const EdgeInsets.only(left: 6),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
