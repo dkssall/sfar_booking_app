@@ -275,7 +275,7 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 14),
           SizedBox(
-            height: 145,
+            height: 120,
             child: Row(
   mainAxisAlignment: MainAxisAlignment.spaceBetween,
   children: [
@@ -353,7 +353,7 @@ subtitle: 'سهلة وسريعة',
           children: [
             Container(
   width: double.infinity,
-  height: 65,
+  height: 50,
   decoration: BoxDecoration(
     borderRadius: BorderRadius.circular(18),
     gradient: LinearGradient(colors: gradient),
@@ -361,8 +361,8 @@ subtitle: 'سهلة وسريعة',
   child: Center(
     child: Image.asset(
       image,
-      width: 50,
-      height: 50,
+      width: 40,
+      height: 40,
       fit: BoxFit.contain,
     ),
   ),
