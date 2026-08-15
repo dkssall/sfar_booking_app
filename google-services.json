@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385816942991",
+    "project_id": "ajel-booking",
+    "storage_bucket": "ajel-booking.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385816942991:android:499fc29911af45707613fa",
+        "android_client_info": {
+          "package_name": "com.example.sfar_booking_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEWKZIEtVAqKKbJdzcl2oqgh2AiMlqln4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
