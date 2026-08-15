@@ -275,41 +275,47 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 14),
           SizedBox(
-            height: 245,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              reverse: true,
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              children: [
-                _serviceCard(
-                  icon: Icons.directions_car_filled_rounded,
-                  title: 'حجز رحلة',
-                  subtitle: 'سهلة وسريعة',
-                  gradient: const [
-                    Color(0xFFFFF7E8),
-                    Color(0xFFE9D2A2)
-                  ],
-                ),
-                _serviceCard(
-                  icon: Icons.badge_outlined,
-                  title: 'إصدار تأشيرات',
-                  subtitle: 'سريع وموثوق',
-                  gradient: const [
-                    Color(0xFFF0F4FF),
-                    Color(0xFFC9D9FF)
-                  ],
-                ),
-                _serviceCard(
-                  icon: Icons.airplane_ticket_rounded,
-                  title: 'تذاكر طيران',
-                  subtitle: 'أفضل الأسعار',
-                  gradient: const [
-                    Color(0xFFEAF5FF),
-                    Color(0xFFB8D9FF)
-                  ],
-                ),
-              ],
-            ),
+            height: 190,
+            child: Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    Expanded(
+      child: _serviceCard(
+        icon: Icons.directions_car_filled_rounded,
+        title: 'حجز رحلة',
+        subtitle: 'سهلة وسريعة',
+        gradient: const [
+          Color(0xFFFFF7E8),
+          Color(0xFFE9D2A2),
+        ],
+      ),
+    ),
+    const SizedBox(width: 6),
+    Expanded(
+      child: _serviceCard(
+        icon: Icons.badge_outlined,
+        title: 'إصدار تأشيرات',
+        subtitle: 'سريع وموثوق',
+        gradient: const [
+          Color(0xFFF0F4FF),
+          Color(0xFFC9D9FF),
+        ],
+      ),
+    ),
+    const SizedBox(width: 6),
+    Expanded(
+      child: _serviceCard(
+        icon: Icons.airplane_ticket_rounded,
+        title: 'تذاكر طيران',
+        subtitle: 'أفضل الأسعار',
+        gradient: const [
+          Color(0xFFEAF5FF),
+          Color(0xFFB8D9FF),
+        ],
+      ),
+    ),
+  ],
+),
           ),
         ],
       ),
@@ -343,7 +349,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
   width: double.infinity,
-  height: 85,
+  height: 75,
   decoration: BoxDecoration(
     borderRadius: BorderRadius.circular(18),
     gradient: LinearGradient(colors: gradient),
@@ -362,7 +368,7 @@ class _HomePageState extends State<HomePage> {
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 16,
                 fontWeight: FontWeight.w900,
               ),
             ),
