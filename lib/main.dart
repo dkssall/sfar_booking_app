@@ -349,7 +349,12 @@ class _HomePageState extends State<HomePage> {
                   gradient: LinearGradient(colors: gradient),
                 ),
                 child: Center(
-                  child: Icon(icon, size: 55, color: Colors.white)
+                  child: Image.asset(
+  'assets/images/service_car.png',
+  width: 55,
+  height: 55,
+  fit: BoxFit.contain,
+)
                 ),
               ),
             ),
