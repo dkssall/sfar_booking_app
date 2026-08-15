@@ -360,7 +360,7 @@ subtitle: 'سهلة وسريعة',
   ),
   child: Center(
     child: Image.asset(
-      'assets/images/service_car.png',
+      image,
       width: 50,
       height: 50,
       fit: BoxFit.contain,
