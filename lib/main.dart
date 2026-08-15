@@ -349,7 +349,7 @@ class _HomePageState extends State<HomePage> {
                   gradient: LinearGradient(colors: gradient),
                 ),
                 child: Center(
-                  child: Icon(icon, size: 78, color: Colors.white),
+                  child: Icon(icon, size: 55, color: Colors.white)
                 ),
               ),
             ),
