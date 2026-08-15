@@ -283,7 +283,9 @@ class _HomePageState extends State<HomePage> {
       child: _serviceCard(
         icon: Icons.directions_car_filled_rounded,
         title: 'حجز رحلة',
-        subtitle: 'سهلة وسريعة',
+image: 'assets/images/service_car.png',
+subtitle: 'سهلة وسريعة',
+        
         gradient: const [
           Color(0xFFFFF7E8),
           Color(0xFFE9D2A2),
@@ -294,8 +296,11 @@ class _HomePageState extends State<HomePage> {
     Expanded(
       child: _serviceCard(
         icon: Icons.badge_outlined,
-        title: 'إصدار تأشيرات',
-        subtitle: 'سريع وموثوق',
+        child: _serviceCard(
+  icon: Icons.badge_outlined,
+  title: 'إصدار تأشيرات',
+  image: 'assets/images/service_visa.png',
+  subtitle: 'سريع وموثوق',
         gradient: const [
           Color(0xFFF0F4FF),
           Color(0xFFC9D9FF),
@@ -306,8 +311,11 @@ class _HomePageState extends State<HomePage> {
     Expanded(
       child: _serviceCard(
         icon: Icons.airplane_ticket_rounded,
-        title: 'تذاكر طيران',
-        subtitle: 'أفضل الأسعار',
+        child: _serviceCard(
+  icon: Icons.airplane_ticket_rounded,
+  title: 'تذاكر طيران',
+  image: 'assets/images/service_flight.png',
+  subtitle: 'أفضل الأسعار',
         gradient: const [
           Color(0xFFEAF5FF),
           Color(0xFFB8D9FF),
@@ -323,11 +331,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _serviceCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required List<Color> gradient,
-  }) {
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required String image,
+  required List<Color> gradient,
+}) {
     return GestureDetector(
       onTap: () => message(title),
       child: Container(
