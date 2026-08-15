@@ -325,7 +325,7 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () => message(title),
       child: Container(
-        width: 190,
+        width: double.infinity,
         margin: const EdgeInsets.only(left: 4),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -341,23 +341,22 @@ class _HomePageState extends State<HomePage> {
         ),
         child: Column(
           children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(21),
-                  gradient: LinearGradient(colors: gradient),
-                ),
-                child: Center(
-                  child: Image.asset(
-  'assets/images/service_car.png',
-  width: 55,
-  height: 55,
-  fit: BoxFit.contain,
-)
-                ),
-              ),
-            ),
+            Container(
+  width: double.infinity,
+  height: 85,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(18),
+    gradient: LinearGradient(colors: gradient),
+  ),
+  child: Center(
+    child: Image.asset(
+      'assets/images/service_car.png',
+      width: 50,
+      height: 50,
+      fit: BoxFit.contain,
+    ),
+  ),
+),
             const SizedBox(height: 10),
             Text(
               title,
