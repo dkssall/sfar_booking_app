@@ -285,7 +285,6 @@ class _HomePageState extends State<HomePage> {
         title: 'حجز رحلة',
 image: 'assets/images/service_car.png',
 subtitle: 'سهلة وسريعة',
-        
         gradient: const [
           Color(0xFFFFF7E8),
           Color(0xFFE9D2A2),
@@ -294,35 +293,29 @@ subtitle: 'سهلة وسريعة',
     ),
     const SizedBox(width: 6),
     Expanded(
-      child: _serviceCard(
-        icon: Icons.badge_outlined,
-        child: _serviceCard(
-  icon: Icons.badge_outlined,
-  title: 'إصدار تأشيرات',
-  image: 'assets/images/service_visa.png',
-  subtitle: 'سريع وموثوق',
-        gradient: const [
-          Color(0xFFF0F4FF),
-          Color(0xFFC9D9FF),
-        ],
-      ),
-    ),
+  child: _serviceCard(
+    icon: Icons.badge_outlined,
+    title: 'إصدار تأشيرات',
+    image: 'assets/images/service_visa.png',
+    subtitle: 'سريع وموثوق',
+    gradient: const [
+      Color(0xFFF0F4FF),
+      Color(0xFFC9D9FF),
+    ],
+  ),
+),
     const SizedBox(width: 6),
     Expanded(
-      child: _serviceCard(
-        icon: Icons.airplane_ticket_rounded,
-        child: _serviceCard(
-  icon: Icons.airplane_ticket_rounded,
-  title: 'تذاكر طيران',
-  image: 'assets/images/service_flight.png',
-  subtitle: 'أفضل الأسعار',
-        gradient: const [
-          Color(0xFFEAF5FF),
-          Color(0xFFB8D9FF),
-        ],
-      ),
-    ),
-  ],
+  child: _serviceCard(
+    icon: Icons.airplane_ticket_rounded,
+    title: 'تذاكر طيران',
+    image: 'assets/images/service_flight.png',
+    subtitle: 'أفضل الأسعار',
+    gradient: const [
+      Color(0xFFEAFA5F),
+      Color(0xFFB8D9FF),
+    ],
+  ),
 ),
           ),
         ],
