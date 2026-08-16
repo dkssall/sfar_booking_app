@@ -323,7 +323,13 @@ Widget _services() {
                     width: 100,
                     child: _serviceCard(
                       icon: Icons.miscellaneous_services_rounded,
-                      title: data['name'] ?? '',
+title: index == 0
+    ? 'خدمات نقل'
+    : index == 1
+        ? 'التأشيرات'
+        : index == 2
+            ? 'تذاكر طيران'
+            : data['name'] ?? '',
                       subtitle: data['description'] ?? '',
                       image: data['imageUrl'] ?? '',
                       gradient: const [
