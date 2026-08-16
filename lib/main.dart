@@ -1196,6 +1196,7 @@ SizedBox(
     ),
     );
 }
+  }
 class TransportResultsPage extends StatelessWidget {
   final String fromLocation;
   final String toLocation;
