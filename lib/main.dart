@@ -223,40 +223,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   const Spacer(),
-                  GestureDetector(
-                    onTap: () => message('صفحة البحث عن رحلة'),
-                    child: Container(
-                      height: 58,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: const Row(
-                        children: [
-                          SizedBox(width: 22),
-                          Icon(
-                            Icons.search_rounded,
-                            color: AjelApp.darkBlue,
-                            size: 30,
-                          ),
-                          SizedBox(width: 12),
-                          Text(
-                            'ابحث عن رحلة',
-                            style: TextStyle(
-                              color: AjelApp.darkBlue,
-                              fontSize: 19,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+                  
         ),
       ),
     );
