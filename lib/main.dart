@@ -460,17 +460,24 @@ subtitle: index == 0
 }) {
     return GestureDetector(
   onTap: () {
-    if (title == 'التأشيرات') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const VisaPage(),
-        ),
-      );
-    } else {
-      message(title);
-    }
-  },
+  if (title == 'خدمات نقل') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TransportPage(),
+      ),
+    );
+  } else if (title == 'التأشيرات') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VisaPage(),
+      ),
+    );
+  } else {
+    message(title);
+  }
+},
   child: Container(
       
         width: double.infinity,
@@ -1056,4 +1063,118 @@ class DottedLinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+class TransportPage extends StatefulWidget {
+  const TransportPage({super.key});
+
+  @override
+  State<TransportPage> createState() => _TransportPageState();
+}
+
+class _TransportPageState extends State<TransportPage> {
+  String? fromLocation;
+  String? toLocation;
+
+  final List<String> locations = [
+    'صنعاء',
+    'عدن',
+    'تعز',
+    'حضرموت',
+    'الحديدة',
+    'إب',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('خدمات النقل'),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+
+              DropdownButtonFormField<String>(
+                value: fromLocation,
+                decoration: const InputDecoration(
+                  labelText: 'من',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.location_on),
+                ),
+                items: locations.map((location) {
+                  return DropdownMenuItem(
+                    value: location,
+                    child: Text(location),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    fromLocation = value;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              DropdownButtonFormField<String>(
+                value: toLocation,
+                decoration: const InputDecoration(
+                  labelText: 'إلى',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.location_on),
+                ),
+                items: locations.map((location) {
+                  return DropdownMenuItem(
+                    value: location,
+                    child: Text(location),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    toLocation = value;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 30),
+
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (fromLocation == null || toLocation == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('يرجى تحديد منطقة الانطلاق والوجهة'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'البحث عن الرحلات من $fromLocation إلى $toLocation',
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'بحث عن الرحلات',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
