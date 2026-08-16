@@ -398,7 +398,7 @@ child: Image.asset(
 ),
 ),
   ),
-),
+
             const SizedBox(height: 5),
             Text(
               title,
