@@ -863,7 +863,56 @@ Future<void> _showBookingDialog() async {
   timeController.dispose();
 }
   
+Widget _bookingButton() {
+  return GestureDetector(
+    onTap: () {
+      setState(() => selectedIndex = 2);
+      _showBookingDialog();
+    },
+    child: Transform.translate(
+      offset: const Offset(0, -18),
+      child: Container(
+        width: 72,
+        height: 72,
+        decoration: BoxDecoration(
+          color: AjelApp.blue,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.white,
+            width: 5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AjelApp.blue.withOpacity(.30),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.luggage_outlined,
+              color: Colors.white,
+              size: 30,
+            ),
+            Text(
+              'حجوزات',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 
+}
 class DottedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
