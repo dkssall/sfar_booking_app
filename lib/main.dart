@@ -134,100 +134,169 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _hero() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      child: Container(
-        height: 270,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          image: const DecorationImage(
-  image: AssetImage('assets/images/hero_plane.png'),
-  fit: BoxFit.cover,
-),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(.18),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 18),
+    child: Container(
+      height: 270,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        image: const DecorationImage(
+          image: AssetImage('assets/images/hero_plane.png'),
+          fit: BoxFit.cover,
         ),
-        child: Stack(
-          children: [
-            Positioned(
-              left: -35,
-              bottom: -35,
-              child: Icon(
-                Icons.cloud_rounded,
-                size: 155,
-                color: Colors.white.withOpacity(.17),
-              ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.18),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black.withOpacity(0.15),
+              ],
             ),
-            Positioned(
-              left: 24,
-              top: 22,
-              child: Transform.rotate(
-                angle: -.15,
-                child: const Icon(
-                  Icons.flight_rounded,
-                  size: 74,
-                  color: Colors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const Text(
+                  'احجز أونلاين في أي مكان',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
-              ),
-            ),
-            Positioned(
-              left: 115,
-              top: 35,
-              child: CustomPaint(
-                size: const Size(100, 50),
-                painter: DottedLinePainter(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'احجز رحلتك الآن',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 31,
-                      fontWeight: FontWeight.w900,
-                    ),
+                const SizedBox(height: 5),
+                const Text(
+                  'حجز مقعد، تأشيرات، وتذاكر طيران',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
                   ),
-                  const SizedBox(height: 3),
-                  const Text(
-                    'بأسرع وأسهل طريقة',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 13),
-                  const Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Colors.white, size: 17),
-                      SizedBox(width: 5),
-                      Flexible(
-                        child: Text(
-                          'رحلات طيران  •  حجوزات بر  •  إصدار تأشيرات',
-                          style: TextStyle(
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: const [
+                          Icon(
+                            Icons.airplane_ticket_outlined,
                             color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            size: 32,
                           ),
-                        ),
+                          SizedBox(height: 5),
+                          Text(
+                            'تذاكر طيران',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            'أفضل الأسعار والعروض',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const Spacer(),
-                  
+                    ),
+                    Container(
+                      height: 65,
+                      width: 1,
+                      color: Colors.white70,
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: const [
+                          Icon(
+                            Icons.public,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'تأشيرات',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            'إصدار تأشيرات بسرعة',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      height: 65,
+                      width: 1,
+                      color: Colors.white70,
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: const [
+                          Icon(
+                            Icons.event_seat_outlined,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            'حجز مقعد',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            'اختر مقعدك بسهولة',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+                
 
 Widget _services() {
   return Padding(
