@@ -20,10 +20,8 @@ jobs:
           flutter-version: '3.35.0'
           channel: stable
 
-       - name: Create Android project files
+      - name: Create Android project files
         run: flutter create --platforms=android --org com.example .
-
-      
 
       - name: Add Firebase config
         run: cp google-services.json android/app/google-services.json
@@ -32,6 +30,7 @@ jobs:
         run: |
           sed -i '/dev.flutter.flutter-plugin-loader/a\    id("com.google.gms.google-services") version "4.4.2" apply false' android/settings.gradle.kts
           sed -i '/dev.flutter.flutter-gradle-plugin/a\    id("com.google.gms.google-services")' android/app/build.gradle.kts
+
       - name: Set App Name
         run: sed -i 's/android:label="[^"]*"/android:label="عاجل-للسفر-والحجوزات"/' android/app/src/main/AndroidManifest.xml
 
