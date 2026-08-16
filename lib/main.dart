@@ -262,75 +262,85 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _services() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 22),
-            child: Text(
-              'خدماتنا',
-              style: TextStyle(
-                color: AjelApp.darkBlue,
-                fontSize: 27,
-                fontWeight: FontWeight.w900,
-              ),
+Widget _services() {
+  return Padding(
+    padding: const EdgeInsets.only(top: 28),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 22),
+          child: Text(
+            'خدماتنا',
+            style: TextStyle(
+              color: AjelApp.darkBlue,
+              fontSize: 27,
+              fontWeight: FontWeight.w900,
             ),
           ),
-          const SizedBox(height: 14),
-          SizedBox(
-            height: 120,
-            child: Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    Expanded(
-      child: _serviceCard(
-        icon: Icons.directions_car_filled_rounded,
-        title: 'حجز رحلة',
-image: 'assets/images/service_car.png',
-subtitle: 'سهلة وسريعة',
-        gradient: const [
-          Color(0xFFFFF7E8),
-          Color(0xFFE9D2A2),
-        ],
-      ),
-    ),
-    const SizedBox(width: 6),
-    Expanded(
-  child: _serviceCard(
-    icon: Icons.badge_outlined,
-    title: 'إصدار تأشيرات',
-    image: 'assets/images/service_visa.png',
-    subtitle: 'سريع وموثوق',
-    gradient: const [
-      Color(0xFFF0F4FF),
-      Color(0xFFC9D9FF),
-    ],
-  ),
-),
-    const SizedBox(width: 6),
-    Expanded(
-  child: _serviceCard(
-    icon: Icons.airplane_ticket_rounded,
-    title: 'تذاكر طيران',
-    image: 'assets/images/service_flight.png',
-    subtitle: 'أفضل الأسعار',
-    gradient: const [
-      Color(0xFFEAFA5F),
-      Color(0xFFB8D9FF),
-    ],
-  ),
-),
-],
-),
-),
-],
-),
-);
-          }
+        ),
+        const SizedBox(height: 14),
 
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('services')
+              .where('isActive', isEqualTo: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return const Padding(
+                padding: EdgeInsets.all(22),
+                child: Text('حدث خطأ في تحميل الخدمات'),
+              );
+            }
+
+            final services = snapshot.data?.docs ?? [];
+
+            if (services.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 22),
+                child: Text('لا توجد خدمات حالياً'),
+              );
+            }
+
+            return SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                itemCount: services.length,
+                itemBuilder: (context, index) {
+                  final data =
+                      services[index].data() as Map<String, dynamic>;
+
+                  return SizedBox(
+                    width: 150,
+                    child: _serviceCard(
+                      icon: Icons.miscellaneous_services_rounded,
+                      title: data['name'] ?? '',
+                      subtitle: data['description'] ?? '',
+                      image: data['imageUrl'] ?? '',
+                      gradient: const [
+                        Color(0xFFFFFFFF),
+                        Color(0xFFE9D2A2),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    ),
+  );
+}  
   Widget _serviceCard({
   required IconData icon,
   required String title,
