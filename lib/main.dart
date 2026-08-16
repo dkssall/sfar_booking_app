@@ -310,17 +310,17 @@ Widget _services() {
             }
 
             return SizedBox(
-              height: 120,
+              height: 145,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 itemCount: services.length,
                 itemBuilder: (context, index) {
                   final data =
                       services[index].data() as Map<String, dynamic>;
 
                   return SizedBox(
-                    width: 100,
+                    width: 108,
                     child: _serviceCard(
                       icon: Icons.miscellaneous_services_rounded,
 title: index == 0
@@ -331,7 +331,13 @@ title: index == 0
             ? 'تذاكر طيران'
             : data['name'] ?? '',
                       subtitle: data['description'] ?? '',
-                      image: data['imageUrl'] ?? '',
+                      image: index == 0
+    ? 'assets/images/service_transport.png'
+    : index == 1
+        ? 'assets/images/service_visa.png'
+        : index == 2
+            ? 'assets/images/service_flight.png'
+            : data['imageUrl'] ?? '',
                       gradient: const [
                         Color(0xFFFFFFFF),
                         Color(0xFFE9D2A2),
@@ -375,20 +381,21 @@ title: index == 0
           children: [
             Container(
   width: double.infinity,
-  height: 50,
+  height: 65,
   decoration: BoxDecoration(
     borderRadius: BorderRadius.circular(18),
     gradient: LinearGradient(colors: gradient),
   ),
   child: Center(
-    child: Image.network(
+child: Image.asset(
   image,
-  width: 50,
-  height: 50,
+  width: 65,
+  height: 65,
   fit: BoxFit.contain,
   errorBuilder: (context, error, stackTrace) {
     return const Icon(Icons.image_not_supported);
   },
+),
 ),
   ),
 ),
@@ -397,14 +404,17 @@ title: index == 0
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+              style: TextStyle(
+  color: Colors.grey.shade600,
+  fontSize: 11,
+),
             ),
             const SizedBox(height: 7),
             Container(
