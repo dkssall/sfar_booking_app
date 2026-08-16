@@ -310,17 +310,17 @@ Widget _services() {
             }
 
             return SizedBox(
-              height: 145,
+              height: 155,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 itemCount: services.length,
                 itemBuilder: (context, index) {
                   final data =
                       services[index].data() as Map<String, dynamic>;
 
                   return SizedBox(
-                    width: 108,
+                    width: 115,
                     child: _serviceCard(
                       icon: Icons.miscellaneous_services_rounded,
 title: index == 0
@@ -389,7 +389,7 @@ title: index == 0
   child: Center(
 child: Image.asset(
   image,
-  width: 65,
+  width: double.infinity,
   height: 65,
   fit: BoxFit.contain,
   errorBuilder: (context, error, stackTrace) {
