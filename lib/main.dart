@@ -375,12 +375,15 @@ Widget _services() {
     gradient: LinearGradient(colors: gradient),
   ),
   child: Center(
-    child: Image.asset(
-      image,
-      width: 40,
-      height: 40,
-      fit: BoxFit.contain,
-    ),
+    child: Image.network(
+  image,
+  width: 40,
+  height: 40,
+  fit: BoxFit.contain,
+  errorBuilder: (context, error, stackTrace) {
+    return const Icon(Icons.image_not_supported);
+  },
+),
   ),
 ),
             const SizedBox(height: 5),
