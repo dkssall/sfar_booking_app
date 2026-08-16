@@ -1189,12 +1189,12 @@ SizedBox(
       style: TextStyle(fontSize: 18),
     ),
   ),
-),
-          ),
-        ),
-      ),
+    ),
+    ],
+    ),
+    ),
+    ),
     );
-  }
 }
 class TransportResultsPage extends StatelessWidget {
   final String fromLocation;
