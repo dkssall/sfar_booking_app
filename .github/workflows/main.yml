@@ -21,7 +21,7 @@ jobs:
           channel: stable
 
       - name: Create Android project files
-        run: flutter create --platforms=android .
+        run: flutter create --platforms=android --org com.example .
 
       - name: Add Firebase config
         run: cp google-services.json android/app/google-services.json
