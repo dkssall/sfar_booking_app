@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'models/booking.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -747,12 +747,127 @@ Widget _services() {
       ),
     );
   }
+Future<void> _showBookingDialog() async {
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final dateController = TextEditingController();
+  final timeController = TextEditingController();
 
+  await showDialog(
+    context: context,
+    builder: (dialogContext) {
+      return AlertDialog(
+        title: const Text(
+          'حجز رحلة',
+          textAlign: TextAlign.center,
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                textDirection: TextDirection.rtl,
+                decoration: const InputDecoration(
+                  labelText: 'الاسم',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                textDirection: TextDirection.rtl,
+                decoration: const InputDecoration(
+                  labelText: 'رقم الهاتف',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: dateController,
+                textDirection: TextDirection.rtl,
+                decoration: const InputDecoration(
+                  labelText: 'تاريخ الرحلة',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: timeController,
+                textDirection: TextDirection.rtl,
+                decoration: const InputDecoration(
+                  labelText: 'وقت الرحلة',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+            },
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (nameController.text.trim().isEmpty ||
+                  phoneController.text.trim().isEmpty ||
+                  dateController.text.trim().isEmpty ||
+                  timeController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('يرجى تعبئة جميع البيانات'),
+                  ),
+                );
+                return;
+              }
+
+              await FirebaseFirestore.instance
+                  .collection('bookings')
+                  .add({
+                'name': nameController.text.trim(),
+                'phone': phoneController.text.trim(),
+                'date': dateController.text.trim(),
+                'time': timeController.text.trim(),
+                'createdAt': FieldValue.serverTimestamp(),
+              });
+
+              if (dialogContext.mounted) {
+                Navigator.pop(dialogContext);
+              }
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('تم إرسال طلب الحجز بنجاح'),
+                  ),
+                );
+              }
+            },
+            child: const Text('تأكيد الحجز'),
+          ),
+        ],
+      );
+    },
+  );
+
+  nameController.dispose();
+  phoneController.dispose();
+  dateController.dispose();
+  timeController.dispose();
+}
   Widget _bookingButton() {
     return GestureDetector(
       onTap: () {
-        setState(() => selectedIndex = 2);
-        message('الحجوزات');
+  setState(() => selectedIndex = 2);
+  _showBookingDialog();
+},
       },
       child: Transform.translate(
         offset: const Offset(0, -18),
