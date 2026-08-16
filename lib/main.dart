@@ -366,7 +366,11 @@ title: index == 0
         : index == 2
             ? 'تذاكر طيران'
             : data['name'] ?? '',
-                      subtitle: data['description'] ?? '',
+subtitle: index == 0
+    ? 'نقل آمن ومريح'
+    : index == 1
+        ? 'إصدار تأشيرات بسرعة'
+        : 'أفضل أسعار تذاكر',
                       image: index == 0
     ? 'assets/images/service_transport.png'
     : index == 1
