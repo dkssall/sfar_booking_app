@@ -320,7 +320,7 @@ Widget _services() {
                       services[index].data() as Map<String, dynamic>;
 
                   return SizedBox(
-                    width: 150,
+                    width: 100,
                     child: _serviceCard(
                       icon: Icons.miscellaneous_services_rounded,
                       title: data['name'] ?? '',
@@ -377,8 +377,8 @@ Widget _services() {
   child: Center(
     child: Image.network(
   image,
-  width: 40,
-  height: 40,
+  width: 50,
+  height: 50,
   fit: BoxFit.contain,
   errorBuilder: (context, error, stackTrace) {
     return const Icon(Icons.image_not_supported);
