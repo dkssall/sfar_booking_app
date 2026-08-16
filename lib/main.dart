@@ -32,7 +32,65 @@ class AjelApp extends StatelessWidget {
     );
   }
 }
+class VisaPage extends StatelessWidget {
+  const VisaPage({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    final visas = [
+      'تأشيرة عمرة',
+      'تأشيرة سياحية عُمان',
+      'تأشيرة سياحية السعودية',
+      'تأشيرة سياحية الإمارات',
+      'تأشيرات أخرى',
+    ];
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('التأشيرات'),
+          backgroundColor: const Color(0xFF1459D9),
+          foregroundColor: Colors.white,
+        ),
+        body: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: visas.length,
+          itemBuilder: (context, index) {
+            return Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: ListTile(
+                leading: const Icon(
+                  Icons.flight_takeoff,
+                  color: Color(0xFF1459D9),
+                ),
+                title: Text(
+                  visas[index],
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+                trailing: const Icon(Icons.arrow_back_ios, size: 18),
+                onTap: () {
+                  messageVisa(context, visas[index]);
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void messageVisa(BuildContext context, String visa) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('تم اختيار $visa'),
+      ),
+    );
+  }
+}
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -401,7 +459,18 @@ subtitle: index == 0
   required List<Color> gradient,
 }) {
     return GestureDetector(
-      onTap: () => message(title),
+      onTap: () {
+  if (title == 'التأشيرات') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VisaPage(),
+      ),
+    );
+  } else {
+    message(title);
+  }
+},,
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.only(left: 4),
