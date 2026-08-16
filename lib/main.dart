@@ -459,19 +459,20 @@ subtitle: index == 0
   required List<Color> gradient,
 }) {
     return GestureDetector(
-      onTap: () {
-  if (title == 'التأشيرات') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const VisaPage(),
-      ),
-    );
-  } else {
-    message(title);
-  }
-},,
-      child: Container(
+  onTap: () {
+    if (title == 'التأشيرات') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const VisaPage(),
+        ),
+      );
+    } else {
+      message(title);
+    }
+  },
+  child: Container(
+      
         width: double.infinity,
         margin: const EdgeInsets.only(left: 4),
         padding: const EdgeInsets.all(12),
