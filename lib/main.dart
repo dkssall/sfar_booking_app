@@ -1143,36 +1143,205 @@ class _TransportPageState extends State<TransportPage> {
 
               const SizedBox(height: 30),
 
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (fromLocation == null || toLocation == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('يرجى تحديد منطقة الانطلاق والوجهة'),
-                        ),
-                      );
-                      return;
-                    }
+SizedBox(
+  width: double.infinity,
+  height: 55,
+  child: ElevatedButton(
+    onPressed: () {
+      if (fromLocation == null || toLocation == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('يرجى تحديد منطقة الانطلاق والوجهة'),
+          ),
+        );
+        return;
+      }
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'البحث عن الرحلات من $fromLocation إلى $toLocation',
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'بحث عن الرحلات',
-                    style: TextStyle(fontSize: 18),
+      if (fromLocation == toLocation) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('لا يمكن اختيار نفس المنطقة للانطلاق والوجهة'),
+          ),
+        );
+        return;
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TransportResultsPage(
+            fromLocation: fromLocation!,
+            toLocation: toLocation!,
+          ),
+        ),
+      );
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFFF8F7FC),
+      foregroundColor: const Color(0xFF53699B),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+    ),
+    child: const Text(
+      'بحث عن الرحلات',
+      style: TextStyle(fontSize: 18),
+    ),
+  ),
+),
+          ),
+        ),
+      ),
+    );
+  }
+}
+class TransportResultsPage extends StatelessWidget {
+  final String fromLocation;
+  final String toLocation;
+
+  const TransportResultsPage({
+    super.key,
+    required this.fromLocation,
+    required this.toLocation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('الرحلات المتاحة'),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF1459D9),
+          foregroundColor: Colors.white,
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('trips')
+              .where('isVisible', isEqualTo: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text('حدث خطأ أثناء تحميل الرحلات'),
+              );
+            }
+
+            final trips = snapshot.data?.docs.where((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+
+              return data['from'] == fromLocation &&
+                  data['to'] == toLocation;
+            }).toList();
+
+            if (trips == null || trips.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    'لا توجد رحلات متاحة حاليًا\nمن $fromLocation إلى $toLocation',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              );
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: trips.length,
+              itemBuilder: (context, index) {
+                final data =
+                    trips[index].data() as Map<String, dynamic>;
+
+                final date = data['date'] ?? '';
+                final time = data['time'] ?? '';
+                final period = data['period'] ?? '';
+                final price = data['price'] ?? '';
+                final seats = data['seats'] ?? '';
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 14),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$fromLocation ← → $toLocation',
+                          style: const TextStyle(
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        Text('📅 التاريخ: $date'),
+                        const SizedBox(height: 7),
+
+                        Text('🕐 الوقت: $time $period'),
+                        const SizedBox(height: 7),
+
+                        Text('💺 المقاعد المتاحة: $seats'),
+                        const SizedBox(height: 7),
+
+                        Text('💰 السعر: $price'),
+
+                        const SizedBox(height: 15),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'تم اختيار الرحلة',
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  const Color(0xFF1459D9),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: const Text(
+                              'اختيار الرحلة',
+                              style: TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );
