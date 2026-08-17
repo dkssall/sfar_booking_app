@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>إضافة رحلة - أجّل</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .header {
+      background: #1d4ed8;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #1d4ed8;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .back {
+      background: #64748b;
+    }
+
+    #message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>إضافة رحلة 🚐</h1>
+    <p>إضافة رحلة جديدة لتظهر في التطبيق</p>
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+
+      <label for="from">مدينة الانطلاق</label>
+      <input id="from" type="text" placeholder="مثال: صنعاء">
+
+      <label for="to">مدينة الوصول</label>
+      <input id="to" type="text" placeholder="مثال: عدن">
+
+      <label for="date">تاريخ الرحلة</label>
+      <input id="date" type="date">
+
+      <label for="time">وقت الرحلة</label>
+      <input id="time" type="time">
+
+      <label for="price">السعر</label>
+      <input id="price" type="number" min="0" placeholder="مثال: 15000">
+
+      <label for="seats">عدد المقاعد</label>
+      <input id="seats" type="number" min="1" placeholder="مثال: 20">
+
+      <label for="description">وصف الرحلة</label>
+      <textarea id="description" placeholder="اكتب أي معلومات إضافية عن الرحلة"></textarea>
+
+      <button id="saveBtn">حفظ الرحلة</button>
+
+      <button class="back" type="button"
+        onclick="location.href='transport.html'">
+        العودة إلى خدمات النقل
+      </button>
+
+      <div id="message"></div>
+
+    </div>
+
+  </div>
+
+
+  <script type="module">
+
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/12.1.7/firebase-app.js";
+
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp
+    }
+      from "https://www.gstatic.com/firebasejs/12.1.7/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
+      authDomain: "ajel-booking.firebaseapp.com",
+      databaseURL: "https://ajel-booking-default-rtdb.firebaseio.com",
+      projectId: "ajel-booking",
+      storageBucket: "ajel-booking.firebasestorage.app",
+      messagingSenderId: "385816942991",
+      appId: "1:385816942991:web:cc9ea0bff26643547613fa",
+      measurementId: "G-0PDL44N8TG"
+    };
+
+
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+
+    const saveBtn = document.getElementById("saveBtn");
+    const message = document.getElementById("message");
+
+
+    saveBtn.addEventListener("click", async () => {
+
+      const from = document.getElementById("from").value.trim();
+      const to = document.getElementById("to").value.trim();
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const price = document.getElementById("price").value;
+      const seats = document.getElementById("seats").value;
+      const description =
+        document.getElementById("description").value.trim();
+
+
+      if (!from || !to || !date || !time || !price || !seats) {
+
+        message.textContent =
+          "يرجى تعبئة جميع البيانات المطلوبة";
+
+        message.style.color = "red";
+
+        return;
+      }
+
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "جاري حفظ الرحلة...";
+
+
+      try {
+
+        await addDoc(collection(db, "trips"), {
+
+          from: from,
+          to: to,
+          date: date,
+          time: time,
+          price: Number(price),
+          seats: Number(seats),
+          availableSeats: Number(seats),
+          description: description,
+
+          status: "available",
+
+          createdAt: serverTimestamp()
+
+        });
+
+
+        message.textContent =
+          "تم حفظ الرحلة بنجاح ✅";
+
+        message.style.color = "green";
+
+
+        document.getElementById("from").value = "";
+        document.getElementById("to").value = "";
+        document.getElementById("date").value = "";
+        document.getElementById("time").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("seats").value = "";
+        document.getElementById("description").value = "";
+
+
+      } catch (error) {
+
+        console.error("خطأ في حفظ الرحلة:", error);
+
+        message.textContent =
+          "حدث خطأ أثناء حفظ الرحلة: " + error.message;
+
+        message.style.color = "red";
+
+      }
+
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = "حفظ الرحلة";
+
+    });
+
+  </script>
+
+</body>
+</html>
