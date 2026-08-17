@@ -1270,8 +1270,7 @@ class TransportResultsPage extends StatelessWidget {
                 final time = data['time'] ?? '';
                 final period = data['period'] ?? '';
                 final price = data['price'] ?? '';
-                final seats = data['seats'] ?? '';
-
+                final seats = data['seats'] ?? '';  
                 return Card(
                   margin: const EdgeInsets.only(bottom: 14),
                   elevation: 2,
