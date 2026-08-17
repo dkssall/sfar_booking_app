@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>لوحة إدارة أجّل</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .header {
+      background: #1d4ed8;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .container {
+      padding: 25px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .welcome {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .welcome h2 {
+      margin-top: 0;
+      color: #1d4ed8;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+    }
+
+    .number {
+      font-size: 30px;
+      font-weight: bold;
+      color: #1d4ed8;
+    }
+
+    @media (max-width: 600px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>لوحة إدارة أجّل</h1>
+  </div>
+
+  <div class="container">
+
+    <div class="welcome">
+      <h2>مرحبًا بك في لوحة الإدارة</h2>
+      <p>تم تسجيل الدخول بنجاح ✅</p>
+      <button id="logoutBtn" type="button" style="margin-top:15px;padding:10px 20px;border:0;border-radius:10px;background:#dc2626;color:white;font-size:16px;cursor:pointer;">تسجيل الخروج</button>
+    </div>
+
+    <div class="cards">
+
+      <div class="card">
+        <h3>الحجوزات</h3>
+        <div class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>طلبات التأشيرات</h3>
+        <div class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>تذاكر الطيران</h3>
+        <div class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>الرحلات البرية</h3>
+        <div class="number">0</div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
+      authDomain: "ajel-booking.firebaseapp.com",
+      databaseURL: "https://ajel-booking-default-rtdb.firebaseio.com",
+      projectId: "ajel-booking",
+      storageBucket: "ajel-booking.firebasestorage.app",
+      messagingSenderId: "385816942991",
+      appId: "1:385816942991:web:cc9ea0bff26643547613fa",
+      measurementId: "G-0PDL44N8TG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // السماح بفتح لوحة الإدارة فقط للمستخدم المسجل دخوله.
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      console.log("تم تسجيل الدخول:", user.email);
+    });
+
+    // تسجيل الخروج.
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error("خطأ في تسجيل الخروج:", error);
+        alert("حدث خطأ أثناء تسجيل الخروج.");
+      }
+    });
+  </script>
+
+</body>
+</html>
