@@ -159,62 +159,64 @@
   const db = getFirestore(app);
 
 
-// التأكد من حالة تسجيل الدخول
-onAuthStateChanged(auth, (user) => {
+// التأكد من تسجيل الدخول أولاً
+onAuthStateChanged(auth, async (user) => {
 
-  if (user) {
-    console.log("تم تسجيل الدخول:", user.email);
-  } else {
-    window.location.href = "index.html";
+  if (!user) {
+    console.log("لا يوجد مستخدم مسجل الدخول");
+    window.location.replace("index.html");
+    return;
+  }
+
+  console.log("المستخدم مسجل الدخول:", user.email);
+
+  // قراءة عدد الحجوزات
+  try {
+    const bookingsSnapshot =
+      await getCountFromServer(collection(db, "bookings"));
+
+    document.getElementById("bookingsCount").textContent =
+      bookingsSnapshot.data().count;
+
+  } catch (error) {
+    console.error("خطأ في قراءة الحجوزات:", error);
+    document.getElementById("bookingsCount").textContent = "0";
+  }
+
+  // قراءة عدد طلبات التأشيرات
+  try {
+    const visaSnapshot =
+      await getCountFromServer(collection(db, "visaRequests"));
+
+    document.getElementById("visaCount").textContent =
+      visaSnapshot.data().count;
+
+  } catch (error) {
+    console.error("خطأ في قراءة طلبات التأشيرات:", error);
+    document.getElementById("visaCount").textContent = "0";
   }
 
 });
 
-    // قراءة عدد الحجوزات
-    try {
-      const bookingsSnapshot =
-        await getCountFromServer(collection(db, "bookings"));
-
-      document.getElementById("bookingsCount").textContent =
-        bookingsSnapshot.data().count;
-
-    } catch (error) {
-      console.error("خطأ في قراءة الحجوزات:", error);
-      document.getElementById("bookingsCount").textContent = "0";
-    }
-
-    // قراءة عدد طلبات التأشيرات
-try {
-  const visaSnapshot =
-    await getCountFromServer(collection(db, "visaRequests"));
-
-  document.getElementById("visaCount").textContent =
-    visaSnapshot.data().count;
-
-} catch (error) {
-  console.error("خطأ في قراءة طلبات التأشيرات:", error);
-  document.getElementById("visaCount").textContent = "0";
-}
 
 // تسجيل الخروج
+document.getElementById("logoutBtn").addEventListener("click", async () => {
 
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
 
-    try {
+    await signOut(auth);
 
-      await signOut(auth);
+    window.location.replace("index.html");
 
-      window.location.href = "index.html";
+  } catch (error) {
 
-    } catch (error) {
+    console.error("خطأ في تسجيل الخروج:", error);
 
-      console.error("خطأ في تسجيل الخروج:", error);
+    alert("حدث خطأ أثناء تسجيل الخروج.");
 
-      alert("حدث خطأ أثناء تسجيل الخروج.");
+  }
 
-    }
-
-  });
+});
 
 </script>
 
