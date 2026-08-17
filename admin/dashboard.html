@@ -159,16 +159,16 @@
   const db = getFirestore(app);
 
 
-  // التأكد من حالة تسجيل الدخول بعد استعادة جلسة Firebase
-await auth.authStateReady();
+// التأكد من حالة تسجيل الدخول
+onAuthStateChanged(auth, (user) => {
 
-const user = auth.currentUser;
+  if (user) {
+    console.log("تم تسجيل الدخول:", user.email);
+  } else {
+    window.location.href = "index.html";
+  }
 
-if (!user) {
-  window.location.href = "index.html";
-} else {
-  console.log("تم تسجيل الدخول:", user.email);
-}
+});
 
     // قراءة عدد الحجوزات
     try {
