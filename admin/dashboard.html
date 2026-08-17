@@ -202,21 +202,28 @@ onAuthStateChanged(auth, async (user) => {
 // تسجيل الخروج
 document.getElementById("logoutBtn").addEventListener("click", async () => {
 
+  console.log("تم الضغط على زر الخروج");
+
   try {
 
     await signOut(auth);
 
-    window.location.replace("index.html");
+    console.log("تم تسجيل الخروج");
+
+    window.location.href = "index.html";
 
   } catch (error) {
 
-    console.error("خطأ في تسجيل الخروج:", error);
-
-    alert("حدث خطأ أثناء تسجيل الخروج.");
+    console.error(error);
+    alert(error.message);
 
   }
 
 });
+
+    
+
+
 
 </script>
 
