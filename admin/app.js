@@ -24,6 +24,8 @@ const firebaseConfig = {
 // ==============================
 
 const app = initializeApp(firebaseConfig);
+alert("app.js يعمل");
+
 const auth = getAuth(app);
 
 // ==============================
