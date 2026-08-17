@@ -159,14 +159,14 @@
   const db = getFirestore(app);
 
 
-  // التأكد من تسجيل الدخول
-  onAuthStateChanged(auth, async (user) => {
+  // التأكد من تسجيل الدخول بعد اكتمال استعادة حالة Firebase
+  await auth.authStateReady();
 
-    if (!user) {
-      window.location.href = "index.html";
-      return;
-    }
+  const user = auth.currentUser;
 
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
     console.log("تم تسجيل الدخول:", user.email);
 
     // قراءة عدد الحجوزات
@@ -178,12 +178,9 @@
         bookingsSnapshot.data().count;
 
     } catch (error) {
-
       console.error("خطأ في قراءة الحجوزات:", error);
-
       document.getElementById("bookingsCount").textContent = "0";
     }
-
 
     // قراءة عدد طلبات التأشيرات
     try {
@@ -194,15 +191,10 @@
         visaSnapshot.data().count;
 
     } catch (error) {
-
       console.error("خطأ في قراءة طلبات التأشيرات:", error);
-
       document.getElementById("visaCount").textContent = "0";
     }
-
-  });
-
-
+  }
   // تسجيل الخروج
   document.getElementById("logoutBtn").addEventListener("click", async () => {
 
@@ -223,7 +215,7 @@
   });
 
 </script>
-  </script>
+
 
 </body>
 </html>
