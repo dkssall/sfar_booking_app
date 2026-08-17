@@ -4,22 +4,118 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>لوحة الإدارة - أجّل</title>
+  <title>لوحة إدارة أجّل</title>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .header {
+      background: #1d4ed8;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .container {
+      padding: 25px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .welcome {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .welcome h2 {
+      margin-top: 0;
+      color: #1d4ed8;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+    }
+
+    .number {
+      font-size: 30px;
+      font-weight: bold;
+      color: #1d4ed8;
+    }
+
+    @media (max-width: 600px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <div class="login-container">
+  <div class="header">
+    <h1>لوحة إدارة أجّل</h1>
+  </div>
 
-    <div class="login-box">
+  <div class="container">
 
-      <h1>أجّل</h1>
+    <div class="welcome">
+      <h2>مرحبًا بك في لوحة الإدارة</h2>
+      <p>تم تسجيل الدخول بنجاح ✅</p>
+    </div>
 
-      <p>مرحبًا بك في لوحة الإدارة</p>
+    <div class="cards">
 
-      <h2>تم تسجيل الدخول بنجاح ✅</h2>
+      <div class="card">
+        <h3>الحجوزات</h3>
+        <div class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>طلبات التأشيرات</h3>
+        <div class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>تذاكر الطيران</h3>
+        <div class="number">0</div>
+      </div>
+
+      <div class="card">
+        <h3>الرحلات البرية</h3>
+        <div class="number">0</div>
+      </div>
 
     </div>
 
