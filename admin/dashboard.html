@@ -184,19 +184,20 @@ if (!user) {
     }
 
     // قراءة عدد طلبات التأشيرات
-    try {
-      const visaSnapshot =
-        await getCountFromServer(collection(db, "visaRequests"));
+try {
+  const visaSnapshot =
+    await getCountFromServer(collection(db, "visaRequests"));
 
-      document.getElementById("visaCount").textContent =
-        visaSnapshot.data().count;
+  document.getElementById("visaCount").textContent =
+    visaSnapshot.data().count;
 
-    } catch (error) {
-      console.error("خطأ في قراءة طلبات التأشيرات:", error);
-      document.getElementById("visaCount").textContent = "0";
-    }
-  }
-  // تسجيل الخروج
+} catch (error) {
+  console.error("خطأ في قراءة طلبات التأشيرات:", error);
+  document.getElementById("visaCount").textContent = "0";
+}
+
+// تسجيل الخروج
+
   document.getElementById("logoutBtn").addEventListener("click", async () => {
 
     try {
