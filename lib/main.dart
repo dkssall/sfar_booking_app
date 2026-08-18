@@ -1601,54 +1601,65 @@ class _BookingPageState extends State<BookingPage> {
               const SizedBox(height: 25),
 
               ElevatedButton(
-                onPressed: () {
-                  if (nameController.text.trim().isEmpty ||
-                      phoneController.text.trim().isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'يرجى إدخال اسم المسافر ورقم الهاتف',
-                        ),
-                      ),
-                    );
-                    return;
-                  }
+                onPressed: () async {
+  if (nameController.text.trim().isEmpty ||
+      phoneController.text.trim().isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('يرجى إدخال اسم المسافر ورقم الهاتف'),
+      ),
+    );
+    return;
+  }
 
-                  if (paymentMethod == 'deposit' &&
-                      receiptImage == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'يرجى إرفاق صورة الإيداع أو الإيصال',
-                        ),
-                      ),
-                    );
-                    return;
-                  }
+  if (paymentMethod == 'deposit' && receiptImage == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('يرجى إرفاق صورة الإيداع أو الإيصال'),
+      ),
+    );
+    return;
+  }
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('تم تجهيز بيانات الحجز'),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1459D9),
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: const Text(
-                  'إرسال الحجز',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ],
-          ),
-        ),
+  try {
+    final DatabaseReference bookingRef =
+        FirebaseDatabase.instance.ref('bookings').push();
+
+    await bookingRef.set({
+      'bookingId': bookingRef.key,
+      'fromLocation': widget.fromLocation,
+      'toLocation': widget.toLocation,
+      'date': widget.date,
+      'time': widget.time,
+      'period': widget.period,
+      'price': widget.price,
+      'availableSeats': widget.seats,
+      'passengerName': nameController.text.trim(),
+      'phone': phoneController.text.trim(),
+      'passengerCount': passengerCount,
+      'paymentMethod': paymentMethod,
+      'receiptAttached': receiptImage != null,
+      'status': 'pending',
+      'createdAt': ServerValue.timestamp,
+    });
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('تم إرسال الحجز بنجاح ✓'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  } catch (e) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('حدث خطأ أثناء إرسال الحجز: $e'),
+        backgroundColor: Colors.red,
       ),
     );
   }
+},
 }
