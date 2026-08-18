@@ -285,7 +285,7 @@
 
     } catch (error) {
       console.error("فشل تشغيل Firebase:", error);
-      showMessage("تعذر تشغيل Firebase. تأكد من اتصال الإنترنت ثم أعد تحميل الصفحة.", "red");
+      showMessage("خطأ Firebase: " + (error.message || error.code || error), "red");
       saveBtn.disabled = false;
       saveBtn.textContent = "حفظ الرحلة";
     }
