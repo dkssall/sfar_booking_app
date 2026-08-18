@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>الرحلات - أجّل</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .header {
+      background: #1d4ed8;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 25px;
+    }
+
+    .top-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 10px;
+      background: #1d4ed8;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .back {
+      background: #64748b;
+    }
+
+    .refresh {
+      background: #16a34a;
+    }
+
+    .message {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .trip {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .trip h2 {
+      margin-top: 0;
+      color: #1d4ed8;
+    }
+
+    .row {
+      margin: 8px 0;
+      font-size: 17px;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    .empty {
+      background: white;
+      padding: 30px;
+      text-align: center;
+      border-radius: 15px;
+      color: #666;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>الرحلات 🚐</h1>
+    <p>الرحلات المسجلة في Firebase</p>
+  </div>
+
+  <div class="container">
+
+    <div class="top-bar">
+      <button class="back" onclick="location.href='transport.html'">
+        العودة لخدمات النقل
+      </button>
+
+      <button class="refresh" onclick="loadTrips()">
+        تحديث 🔄
+      </button>
+    </div>
+
+    <div id="message" class="message">
+      جاري تحميل الرحلات...
+    </div>
+
+    <div id="trips"></div>
+
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
+
+  <script>
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
+      authDomain: "ajel-booking.firebaseapp.com",
+      databaseURL: "https://ajel-booking-default-rtdb.firebaseio.com",
+      projectId: "ajel-booking",
+      storageBucket: "ajel-booking.firebasestorage.app",
+      messagingSenderId: "385816942991",
+      appId: "1:385816942991:web:cc9ea0bff26643547613fa",
+      measurementId: "G-0PDL44N8TG"
+    };
+
+    const message = document.getElementById("message");
+    const tripsContainer = document.getElementById("trips");
+
+    let db = null;
+
+    try {
+
+      firebase.initializeApp(firebaseConfig);
+
+      const auth = firebase.auth();
+      db = firebase.firestore();
+
+      auth.onAuthStateChanged(function(user) {
+
+        if (!user) {
+          message.textContent = "يجب تسجيل الدخول إلى لوحة الإدارة أولًا";
+          message.className = "message error";
+          return;
+        }
+
+        loadTrips();
+
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      message.textContent =
+        "حدث خطأ في تشغيل Firebase: " +
+        (error.message || error);
+
+      message.className = "message error";
+    }
+
+
+    async function loadTrips() {
+
+      if (!db) {
+        return;
+      }
+
+      message.textContent = "جاري تحميل الرحلات...";
+      message.className = "message";
+
+      tripsContainer.innerHTML = "";
+
+      try {
+
+        const snapshot = await db
+          .collection("trips")
+          .orderBy("date", "asc")
+          .get();
+
+        if (snapshot.empty) {
+
+          message.textContent = "لا توجد رحلات محفوظة حاليًا.";
+          message.className = "message";
+
+          return;
+        }
+
+        message.textContent =
+          "تم العثور على " + snapshot.size + " رحلة ✅";
+
+        message.className = "message success";
+
+
+        snapshot.forEach(function(doc) {
+
+          const trip = doc.data();
+
+          const card = document.createElement("div");
+
+          card.className = "trip";
+
+          card.innerHTML = `
+
+            <h2>
+              ${escapeHtml(trip.from || "")}
+              ←
+              ${escapeHtml(trip.to || "")}
+            </h2>
+
+            <div class="row">
+              <span class="label">📅 التاريخ:</span>
+              ${escapeHtml(trip.date || "-")}
+            </div>
+
+            <div class="row">
+              <span class="label">⏰ الوقت:</span>
+              ${escapeHtml(trip.time || "-")}
+            </div>
+
+            <div class="row">
+              <span class="label">💰 السعر:</span>
+              ${trip.price ?? "-"}
+            </div>
+
+            <div class="row">
+              <span class="label">💺 المقاعد:</span>
+              ${trip.seats ?? "-"}
+            </div>
+
+            <div class="row">
+              <span class="label">💺 المقاعد المتاحة:</span>
+              ${trip.availableSeats ?? "-"}
+            </div>
+
+            <div class="row">
+              <span class="label">📌 الحالة:</span>
+              ${escapeHtml(trip.status || "-")}
+            </div>
+
+            <div class="row">
+              <span class="label">📝 الوصف:</span>
+              ${escapeHtml(trip.description || "لا يوجد وصف")}
+            </div>
+
+          `;
+
+          tripsContainer.appendChild(card);
+
+        });
+
+      } catch (error) {
+
+        console.error("خطأ في تحميل الرحلات:", error);
+
+        if (error.code === "permission-denied") {
+
+          message.textContent =
+            "Firebase رفض قراءة الرحلات بسبب صلاحيات Firestore.";
+
+        } else {
+
+          message.textContent =
+            "حدث خطأ أثناء تحميل الرحلات: " +
+            (error.message || error.code);
+
+        }
+
+        message.className = "message error";
+      }
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+  </script>
+
+</body>
+</html>
