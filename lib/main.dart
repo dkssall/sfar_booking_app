@@ -1316,7 +1316,7 @@ class TransportResultsPage extends StatelessWidget {
     ),
   );
 
-  await _showBookingDialog();
+  
 },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
