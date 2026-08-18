@@ -1266,14 +1266,15 @@ class TransportResultsPage extends StatelessWidget {
               itemCount: trips.length,
               itemBuilder: (context, index) {
                 final data =
-                    trips[index].data() as Map<String, dynamic>;
+    trips[index].data() as Map<String, dynamic>;
 
-                final date = data['date'] ?? '';
-                final time = data['time'] ?? '';
-                final period = data['period'] ?? '';
-                final price = data['price'] ?? '';
-                final seats = data['seats'] ?? '';  
-                return Card(
+final date = (data['date'] ?? '').toString();
+final time = (data['time'] ?? '').toString();
+final period = (data['period'] ?? '').toString();
+final price = (data['price'] ?? '').toString();
+final seats = (data['seats'] ?? '').toString();
+
+return Card(
                   margin: const EdgeInsets.only(bottom: 14),
                   elevation: 2,
                   shape: RoundedRectangleBorder(
