@@ -1309,14 +1309,21 @@ class TransportResultsPage extends StatelessWidget {
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: () async {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('تم اختيار الرحلة'),
+                            onPressed: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => BookingPage(
+        fromLocation: fromLocation!,
+        toLocation: toLocation!,
+        date: date,
+        time: time,
+        period: period,
+        price: price,
+        seats: seats,
+      ),
     ),
   );
-
-  
 },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
