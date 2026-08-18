@@ -1309,15 +1309,15 @@ class TransportResultsPage extends StatelessWidget {
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'تم اختيار الرحلة',
-                                  ),
-                                ),
-                              );
-                            },
+                            onPressed: () async {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('تم اختيار الرحلة'),
+    ),
+  );
+
+  await _showBookingDialog();
+},
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   const Color(0xFF1459D9),
