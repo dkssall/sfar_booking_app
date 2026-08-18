@@ -25,6 +25,11 @@
       text-align: center;
     }
 
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
     .container {
       max-width: 700px;
       margin: auto;
@@ -84,6 +89,7 @@
       margin-top: 15px;
       text-align: center;
       font-weight: bold;
+      line-height: 1.8;
     }
   </style>
 </head>
@@ -100,30 +106,66 @@
     <div class="card">
 
       <label for="from">مدينة الانطلاق</label>
-      <input id="from" type="text" placeholder="مثال: صنعاء">
+      <input
+        id="from"
+        type="text"
+        placeholder="مثال: صنعاء"
+      >
 
       <label for="to">مدينة الوصول</label>
-      <input id="to" type="text" placeholder="مثال: عدن">
+      <input
+        id="to"
+        type="text"
+        placeholder="مثال: عدن"
+      >
 
       <label for="date">تاريخ الرحلة</label>
-      <input id="date" type="date" required>
+      <input
+        id="date"
+        type="date"
+        required
+      >
+
       <label for="time">وقت الرحلة</label>
-      <input id="time" type="text" placeholder="مثال: 2:06 ص" required>
+      <input
+        id="time"
+        type="text"
+        placeholder="مثال: 2:06 ص"
+        required
+      >
 
       <label for="price">السعر</label>
-      <input id="price" type="number" min="0" placeholder="مثال: 15000">
+      <input
+        id="price"
+        type="number"
+        min="0"
+        placeholder="مثال: 15000"
+      >
 
       <label for="seats">عدد المقاعد</label>
-      <input id="seats" type="number" min="1" placeholder="مثال: 20">
+      <input
+        id="seats"
+        type="number"
+        min="1"
+        placeholder="مثال: 20"
+      >
 
       <label for="description">وصف الرحلة</label>
-      <textarea id="description" placeholder="اكتب أي معلومات إضافية عن الرحلة"></textarea>
+      <textarea
+        id="description"
+        placeholder="اكتب أي معلومات إضافية عن الرحلة"
+      ></textarea>
 
-      <button id="saveBtn">حفظ الرحلة</button>
+      <button id="saveBtn" type="button">
+        حفظ الرحلة
+      </button>
 
-      <button class="back" type="button"
-        onclick="location.href='transport.html'">
-        العودة إلى خدمات النقل
+      <button
+        class="back"
+        type="button"
+        onclick="location.href='dashboard.html'"
+      >
+        العودة إلى لوحة الإدارة
       </button>
 
       <div id="message"></div>
@@ -139,6 +181,12 @@
       from "https://www.gstatic.com/firebasejs/12.1.7/firebase-app.js";
 
     import {
+      getAuth,
+      onAuthStateChanged
+    }
+      from "https://www.gstatic.com/firebasejs/12.1.7/firebase-auth.js";
+
+    import {
       getFirestore,
       collection,
       addDoc,
@@ -146,6 +194,10 @@
     }
       from "https://www.gstatic.com/firebasejs/12.1.7/firebase-firestore.js";
 
+
+    // =========================
+    // Firebase
+    // =========================
 
     const firebaseConfig = {
       apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
@@ -161,26 +213,112 @@
 
     const app = initializeApp(firebaseConfig);
 
+    const auth = getAuth(app);
+
     const db = getFirestore(app);
 
 
+    // =========================
+    // العناصر
+    // =========================
+
     const saveBtn = document.getElementById("saveBtn");
     const message = document.getElementById("message");
-console.log("زر الحفظ يعمل");
+
+
+    let currentUser = null;
+
+
+    // =========================
+    // التأكد من تسجيل الدخول
+    // =========================
+
+    onAuthStateChanged(auth, (user) => {
+
+      if (!user) {
+
+        currentUser = null;
+
+        message.textContent =
+          "يجب تسجيل الدخول إلى لوحة الإدارة أولًا";
+
+        message.style.color = "red";
+
+        saveBtn.disabled = true;
+
+        return;
+      }
+
+      currentUser = user;
+
+      saveBtn.disabled = false;
+
+      message.textContent =
+        "جاهز لإضافة رحلة ✅";
+
+      message.style.color = "green";
+
+      console.log("المستخدم المسجل:", user.email);
+
+    });
+
+
+    // =========================
+    // حفظ الرحلة
+    // =========================
 
     saveBtn.addEventListener("click", async () => {
-console.log("تم الضغط على حفظ");
-      const from = document.getElementById("from").value.trim();
-      const to = document.getElementById("to").value.trim();
-      const date = document.getElementById("date").value;
-      const time = document.getElementById("time").value;
-      const price = document.getElementById("price").value;
-      const seats = document.getElementById("seats").value;
+
+      console.log("تم الضغط على حفظ الرحلة");
+
+
+      // التأكد من تسجيل الدخول
+
+      if (!currentUser) {
+
+        message.textContent =
+          "يجب تسجيل الدخول أولًا";
+
+        message.style.color = "red";
+
+        return;
+      }
+
+
+      // قراءة البيانات
+
+      const from =
+        document.getElementById("from").value.trim();
+
+      const to =
+        document.getElementById("to").value.trim();
+
+      const date =
+        document.getElementById("date").value;
+
+      const time =
+        document.getElementById("time").value.trim();
+
+      const price =
+        document.getElementById("price").value;
+
+      const seats =
+        document.getElementById("seats").value;
+
       const description =
         document.getElementById("description").value.trim();
 
 
-      if (!from || !to || !date || !time || !price || !seats) {
+      // التحقق من البيانات
+
+      if (
+        !from ||
+        !to ||
+        !date ||
+        !time ||
+        !price ||
+        !seats
+      ) {
 
         message.textContent =
           "يرجى تعبئة جميع البيانات المطلوبة";
@@ -191,29 +329,103 @@ console.log("تم الضغط على حفظ");
       }
 
 
+      // التأكد من الأرقام
+
+      const priceNumber = Number(price);
+
+      const seatsNumber = Number(seats);
+
+
+      if (
+        isNaN(priceNumber) ||
+        priceNumber < 0
+      ) {
+
+        message.textContent =
+          "السعر غير صحيح";
+
+        message.style.color = "red";
+
+        return;
+      }
+
+
+      if (
+        isNaN(seatsNumber) ||
+        seatsNumber < 1
+      ) {
+
+        message.textContent =
+          "عدد المقاعد غير صحيح";
+
+        message.style.color = "red";
+
+        return;
+      }
+
+
+      // تعطيل الزر أثناء الحفظ
+
       saveBtn.disabled = true;
-      saveBtn.textContent = "جاري حفظ الرحلة...";
+
+      saveBtn.textContent =
+        "جاري حفظ الرحلة...";
+
+      message.textContent =
+        "جاري الحفظ...";
+
+      message.style.color = "#1d4ed8";
 
 
       try {
 
-        await addDoc(collection(db, "trips"), {
+        // =========================
+        // إضافة الرحلة إلى Firestore
+        // =========================
+
+        const tripData = {
 
           from: from,
+
           to: to,
+
           date: date,
+
           time: time,
-          price: Number(price),
-          seats: Number(seats),
-          availableSeats: Number(seats),
+
+          price: priceNumber,
+
+          seats: seatsNumber,
+
+          availableSeats: seatsNumber,
+
           description: description,
 
           status: "available",
 
-          createdAt: serverTimestamp()
+          createdAt: serverTimestamp(),
 
-        });
+          createdBy: currentUser.uid,
 
+          createdByEmail:
+            currentUser.email || ""
+
+        };
+
+
+        const docRef = await addDoc(
+          collection(db, "trips"),
+          tripData
+        );
+
+
+        console.log(
+          "تم حفظ الرحلة، ID:",
+          docRef.id
+        );
+
+
+        // رسالة نجاح
 
         message.textContent =
           "تم حفظ الرحلة بنجاح ✅";
@@ -221,29 +433,60 @@ console.log("تم الضغط على حفظ");
         message.style.color = "green";
 
 
+        // تنظيف الحقول
+
         document.getElementById("from").value = "";
+
         document.getElementById("to").value = "";
+
         document.getElementById("date").value = "";
+
         document.getElementById("time").value = "";
+
         document.getElementById("price").value = "";
+
         document.getElementById("seats").value = "";
+
         document.getElementById("description").value = "";
 
 
       } catch (error) {
 
-        console.error("خطأ في حفظ الرحلة:", error);
+        console.error(
+          "خطأ في حفظ الرحلة:",
+          error
+        );
 
-        message.textContent =
-          "حدث خطأ أثناء حفظ الرحلة: " + error.message;
+
+        // إظهار الخطأ للمستخدم
+
+        if (
+          error.code ===
+          "permission-denied"
+        ) {
+
+          message.textContent =
+            "تم رفض الحفظ من Firebase. نحتاج تعديل صلاحيات Firestore.";
+
+        } else {
+
+          message.textContent =
+            "حدث خطأ أثناء حفظ الرحلة: " +
+            error.message;
+
+        }
 
         message.style.color = "red";
 
       }
 
 
+      // إعادة الزر
+
       saveBtn.disabled = false;
-      saveBtn.textContent = "حفظ الرحلة";
+
+      saveBtn.textContent =
+        "حفظ الرحلة";
 
     });
 
