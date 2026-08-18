@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إضافة رحلة - أجّل</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .header {
+      background: #1d4ed8;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 7px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 18px;
+      direction: rtl;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #1d4ed8;
+      color: white;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .back {
+      background: #64748b;
+    }
+
+    #message {
+      margin-top: 15px;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.8;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>إضافة رحلة 🚐</h1>
+    <p>إضافة رحلة جديدة لتظهر في التطبيق</p>
+  </div>
+
+  <div class="container">
+    <div class="card">
+
+      <label for="from">مدينة الانطلاق</label>
+      <input id="from" type="text" placeholder="مثال: عدن">
+
+      <label for="to">مدينة الوصول</label>
+      <input id="to" type="text" placeholder="مثال: صنعاء">
+
+      <label for="date">تاريخ الرحلة</label>
+      <input id="date" type="date">
+
+      <label for="time">وقت الرحلة</label>
+      <input id="time" type="text" placeholder="مثال: 1:00 م">
+
+      <label for="price">السعر</label>
+      <input id="price" type="number" min="0" placeholder="مثال: 10000">
+
+      <label for="seats">عدد المقاعد</label>
+      <input id="seats" type="number" min="1" placeholder="مثال: 10">
+
+      <label for="description">وصف الرحلة</label>
+      <textarea id="description" placeholder="اكتب أي معلومات إضافية عن الرحلة"></textarea>
+
+      <button id="saveBtn" type="button">حفظ الرحلة</button>
+
+      <button class="back" type="button" onclick="location.href='dashboard.html'">
+        العودة إلى لوحة الإدارة
+      </button>
+
+      <div id="message"></div>
+
+    </div>
+  </div>
+
+  <!-- Firebase Compat: أبسط وأكثر توافقًا مع GitHub Pages -->
+  <script src="https://www.gstatic.com/firebasejs/12.1.7/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.1.7/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.1.7/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
+      authDomain: "ajel-booking.firebaseapp.com",
+      databaseURL: "https://ajel-booking-default-rtdb.firebaseio.com",
+      projectId: "ajel-booking",
+      storageBucket: "ajel-booking.firebasestorage.app",
+      messagingSenderId: "385816942991",
+      appId: "1:385816942991:web:cc9ea0bff26643547613fa",
+      measurementId: "G-0PDL44N8TG"
+    };
+
+    const message = document.getElementById("message");
+    const saveBtn = document.getElementById("saveBtn");
+
+    function showMessage(text, color) {
+      message.textContent = text;
+      message.style.color = color || "#222";
+    }
+
+    // إظهار أي خطأ JavaScript بدل أن يبقى الزر بلا استجابة
+    window.addEventListener("error", function(event) {
+      console.error("JavaScript error:", event.error || event.message);
+      showMessage("حدث خطأ في تشغيل الصفحة. أعد تحميل الصفحة وحاول مرة أخرى.", "red");
+      saveBtn.disabled = false;
+      saveBtn.textContent = "حفظ الرحلة";
+    });
+
+    let currentUser = null;
+    let firebaseReady = false;
+
+    try {
+      firebase.initializeApp(firebaseConfig);
+
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      firebaseReady = true;
+      showMessage("جاري التحقق من تسجيل دخول الإدارة...", "#1d4ed8");
+
+      auth.onAuthStateChanged(function(user) {
+        currentUser = user || null;
+
+        if (user) {
+          console.log("المستخدم المسجل:", user.email);
+          showMessage("جاهز لإضافة رحلة ✅", "green");
+          saveBtn.disabled = false;
+        } else {
+          console.log("لا يوجد مستخدم مسجل الدخول");
+          showMessage("يجب تسجيل الدخول إلى لوحة الإدارة أولًا", "red");
+          saveBtn.disabled = false;
+        }
+      });
+
+      saveBtn.addEventListener("click", async function() {
+        console.log("تم الضغط على زر حفظ الرحلة");
+
+        if (!firebaseReady) {
+          showMessage("Firebase لم يتم تشغيله بشكل صحيح.", "red");
+          return;
+        }
+
+        if (!currentUser) {
+          showMessage("يجب تسجيل الدخول إلى لوحة الإدارة أولًا", "red");
+          return;
+        }
+
+        const from = document.getElementById("from").value.trim();
+        const to = document.getElementById("to").value.trim();
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value.trim();
+        const priceText = document.getElementById("price").value.trim();
+        const seatsText = document.getElementById("seats").value.trim();
+        const description = document.getElementById("description").value.trim();
+
+        if (!from || !to || !date || !time || !priceText || !seatsText) {
+          showMessage("يرجى تعبئة جميع البيانات المطلوبة", "red");
+          return;
+        }
+
+        const price = Number(priceText);
+        const seats = Number(seatsText);
+
+        if (!Number.isFinite(price) || price < 0) {
+          showMessage("السعر غير صحيح", "red");
+          return;
+        }
+
+        if (!Number.isInteger(seats) || seats < 1) {
+          showMessage("عدد المقاعد غير صحيح", "red");
+          return;
+        }
+
+        saveBtn.disabled = true;
+        saveBtn.textContent = "جاري حفظ الرحلة...";
+        showMessage("جاري الحفظ في Firebase...", "#1d4ed8");
+
+        try {
+          const tripData = {
+            from: from,
+            to: to,
+            date: date,
+            time: time,
+            price: price,
+            seats: seats,
+            availableSeats: seats,
+            description: description,
+            status: "available",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            createdBy: currentUser.uid,
+            createdByEmail: currentUser.email || ""
+          };
+
+          const docRef = await db.collection("trips").add(tripData);
+
+          console.log("تم حفظ الرحلة:", docRef.id);
+          showMessage("تم حفظ الرحلة بنجاح ✅", "green");
+
+          document.getElementById("from").value = "";
+          document.getElementById("to").value = "";
+          document.getElementById("date").value = "";
+          document.getElementById("time").value = "";
+          document.getElementById("price").value = "";
+          document.getElementById("seats").value = "";
+          document.getElementById("description").value = "";
+
+        } catch (error) {
+          console.error("خطأ Firebase:", error);
+
+          if (error.code === "permission-denied") {
+            showMessage("Firebase رفض الحفظ بسبب صلاحيات Firestore.", "red");
+          } else if (error.code === "unauthenticated") {
+            showMessage("انتهت جلسة تسجيل الدخول. سجّل الدخول من جديد.", "red");
+          } else {
+            showMessage("خطأ أثناء الحفظ: " + (error.message || error.code), "red");
+          }
+        }
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = "حفظ الرحلة";
+      });
+
+    } catch (error) {
+      console.error("فشل تشغيل Firebase:", error);
+      showMessage("تعذر تشغيل Firebase. تأكد من اتصال الإنترنت ثم أعد تحميل الصفحة.", "red");
+      saveBtn.disabled = false;
+      saveBtn.textContent = "حفظ الرحلة";
+    }
+  </script>
+
+</body>
+</html>
