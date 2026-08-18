@@ -1623,10 +1623,14 @@ class _BookingPageState extends State<BookingPage> {
 
   try {
     final DatabaseReference bookingRef =
-        FirebaseDatabase.instance.ref('bookings').push();
+    FirebaseDatabase.instance.ref('bookings').push();
+
+final String bookingNumber =
+    'SF-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
 
     await bookingRef.set({
       'bookingId': bookingRef.key,
+      'bookingNumber': bookingNumber,
       'fromLocation': widget.fromLocation,
       'toLocation': widget.toLocation,
       'date': widget.date,
@@ -1646,11 +1650,13 @@ class _BookingPageState extends State<BookingPage> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('تم إرسال الحجز بنجاح ✓'),
-        backgroundColor: Colors.green,
-      ),
-    );
+  SnackBar(
+    content: Text(
+      'تم إرسال الحجز بنجاح ✓\nرقم الحجز: #$bookingNumber',
+    ),
+    backgroundColor: Colors.green,
+  ),
+);
   } catch (e) {
     if (!mounted) return;
 
