@@ -248,6 +248,7 @@
             availableSeats: seats,
             description: description,
             status: "available",
+            isVisible: true,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             createdBy: currentUser.uid,
             createdByEmail: currentUser.email || ""
