@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'models/booking.dart';
+import 'package:image_picker/image_picker.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -1349,6 +1350,302 @@ class TransportResultsPage extends StatelessWidget {
               },
             );
           },
+        ),
+      ),
+    );
+  }
+}
+class BookingPage extends StatefulWidget {
+  final String fromLocation;
+  final String toLocation;
+  final String date;
+  final String time;
+  final String period;
+  final String price;
+  final String seats;
+
+  const BookingPage({
+    super.key,
+    required this.fromLocation,
+    required this.toLocation,
+    required this.date,
+    required this.time,
+    required this.period,
+    required this.price,
+    required this.seats,
+  });
+
+  @override
+  State<BookingPage> createState() => _BookingPageState();
+}
+
+class _BookingPageState extends State<BookingPage> {
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+
+  final ImagePicker _picker = ImagePicker();
+
+  XFile? receiptImage;
+
+  int passengerCount = 1;
+
+  String paymentMethod = 'cash';
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> pickReceiptImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+
+    if (image != null) {
+      setState(() {
+        receiptImage = image;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('بيانات الحجز'),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF1459D9),
+          foregroundColor: Colors.white,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${widget.fromLocation} → ${widget.toLocation}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text('📅 التاريخ: ${widget.date}'),
+                      const SizedBox(height: 7),
+                      Text('🕐 الوقت: ${widget.time} ${widget.period}'),
+                      const SizedBox(height: 7),
+                      Text('💰 السعر: ${widget.price}'),
+                      const SizedBox(height: 7),
+                      Text('💺 المقاعد المتاحة: ${widget.seats}'),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              const Text(
+                'بيانات المسافر',
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'اسم المسافر',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'رقم الهاتف',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                'عدد المقاعد',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      if (passengerCount > 1) {
+                        setState(() {
+                          passengerCount--;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.remove_circle_outline),
+                  ),
+                  Text(
+                    '$passengerCount',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      if (passengerCount < int.tryParse(widget.seats)!) {
+                        setState(() {
+                          passengerCount++;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.add_circle_outline),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                'طريقة الدفع',
+                style: TextStyle(
+                  fontSize: 19,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              RadioListTile<String>(
+                value: 'cash',
+                groupValue: paymentMethod,
+                title: const Text('الدفع عن الحضور'),
+                subtitle: const Text(
+                  'يمكنك إلغاء الحجز لاحقًا',
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    paymentMethod = value!;
+                    receiptImage = null;
+                  });
+                },
+              ),
+
+              RadioListTile<String>(
+                value: 'deposit',
+                groupValue: paymentMethod,
+                title: const Text('الدفع عن طريق الإيداع'),
+                subtitle: const Text(
+                  'لا يمكن إلغاء الحجز بعد الإرسال',
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    paymentMethod = value!;
+                  });
+                },
+              ),
+
+              if (paymentMethod == 'deposit') ...[
+                const SizedBox(height: 15),
+
+                OutlinedButton.icon(
+                  onPressed: pickReceiptImage,
+                  icon: const Icon(Icons.receipt_long),
+                  label: Text(
+                    receiptImage == null
+                        ? 'إرفاق صورة الإيداع / الإيصال'
+                        : 'تغيير صورة الإيصال',
+                  ),
+                ),
+
+                if (receiptImage != null) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    'تم اختيار صورة الإيصال ✓',
+                    style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ],
+
+              const SizedBox(height: 25),
+
+              ElevatedButton(
+                onPressed: () {
+                  if (nameController.text.trim().isEmpty ||
+                      phoneController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'يرجى إدخال اسم المسافر ورقم الهاتف',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  if (paymentMethod == 'deposit' &&
+                      receiptImage == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'يرجى إرفاق صورة الإيداع أو الإيصال',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('تم تجهيز بيانات الحجز'),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1459D9),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: const Text(
+                  'إرسال الحجز',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
