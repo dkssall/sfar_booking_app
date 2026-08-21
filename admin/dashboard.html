@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>لوحة إدارة أجّل</title>
 
+
 <style>
+
 * {
   box-sizing: border-box;
 }
+
 
 body {
   margin: 0;
@@ -18,6 +25,7 @@ body {
   color: #222;
 }
 
+
 .header {
   background: #1d4ed8;
   color: white;
@@ -25,16 +33,19 @@ body {
   text-align: center;
 }
 
+
 .header h1 {
   margin: 0;
   font-size: 28px;
 }
+
 
 .container {
   padding: 25px;
   max-width: 1000px;
   margin: auto;
 }
+
 
 .welcome {
   background: white;
@@ -44,9 +55,11 @@ body {
   box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 
+
 .welcome h2 {
   color: #1d4ed8;
 }
+
 
 .cards {
   display: grid;
@@ -54,6 +67,7 @@ body {
   gap: 15px;
   margin-top: 20px;
 }
+
 
 .card {
   background: white;
@@ -63,15 +77,34 @@ body {
   box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 
+
 .card h3 {
   margin: 0 0 10px;
 }
+
 
 .number {
   font-size: 30px;
   font-weight: bold;
   color: #1d4ed8;
 }
+
+
+.card.clickable {
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+
+.card.clickable:hover {
+  transform: translateY(-3px);
+}
+
+
+.card.clickable:active {
+  transform: scale(.98);
+}
+
 
 button {
   padding: 10px 20px;
@@ -84,284 +117,450 @@ button {
   font-size: 16px;
 }
 
+
 .logout {
   background: #dc2626;
 }
 
+
+.transport-buttons {
+  margin-top: 15px;
+}
+
+
+.live {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #16a34a;
+}
+
+
 @media(max-width:600px){
+
   .cards {
     grid-template-columns: 1fr;
   }
+
+  .container {
+    padding: 15px;
+  }
+
 }
+
 </style>
 
 </head>
 
+
 <body>
 
+
 <div class="header">
-<h1>لوحة إدارة أجّل</h1>
+
+<h1>
+لوحة إدارة أجّل
+</h1>
+
 </div>
+
 
 
 <div class="container">
 
+
 <div class="welcome">
 
-<h2>مرحبًا بك في لوحة الإدارة</h2>
+<h2>
+مرحبًا بك في لوحة الإدارة
+</h2>
 
-<p>تم تسجيل الدخول بنجاح ✅</p>
+<p>
+تم تسجيل الدخول بنجاح ✅
+</p>
 
-<button class="logout" id="logoutBtn">
+
+<button
+  class="logout"
+  id="logoutBtn">
+
 تسجيل الخروج
+
 </button>
 
 </div>
+
 
 
 <div class="cards">
 
 
-<div class="card">
-<h3>الحجوزات</h3>
-<div id="bookingsCount" class="number">0</div>
+
+<!-- الحجوزات -->
+
+<div
+  class="card clickable"
+  onclick="location.href='transport-orders.html'">
+
+<h3>
+🚐 الحجوزات
+</h3>
+
+<div
+  id="bookingsCount"
+  class="number">
+
+0
+
+</div>
+
+<span class="live">
+● تحديث مباشر
+</span>
+
 </div>
 
 
+
+<!-- التأشيرات -->
+
 <div class="card">
-<h3>طلبات التأشيرات</h3>
-<div id="visaCount" class="number">0</div>
+
+<h3>
+🛂 طلبات التأشيرات
+</h3>
+
+<div
+  id="visaCount"
+  class="number">
+
+0
+
+</div>
+
 </div>
 
 
+
+<!-- تذاكر الطيران -->
+
 <div class="card">
-<h3>تذاكر الطيران</h3>
-<div class="number">0</div>
+
+<h3>
+✈️ تذاكر الطيران
+</h3>
+
+<div class="number">
+0
+</div>
+
 </div>
 
 
+
+<!-- الرحلات البرية -->
+
 <div class="card">
-<h3>الرحلات البرية</h3>
-<div class="number">0</div>
+
+<h3>
+🚌 الرحلات البرية
+</h3>
+
+<div class="number">
+0
+</div>
+
 </div>
 
 
+
+<!-- خدمات النقل -->
+
 <div class="card">
 
-<h3>خدمات النقل 🚐</h3>
+<h3>
+🚐 خدمات النقل
+</h3>
 
-<button onclick="location.href='add-trip.html'">
+
+<div class="transport-buttons">
+
+<button
+  onclick="location.href='add-trip.html'">
+
 ➕ إضافة رحلة
+
 </button>
 
-<button onclick="location.href='transport-orders.html'">
+
+<button
+  onclick="location.href='transport-orders.html'">
+
 📋 طلبات الرحلات
+
 </button>
 
 </div>
 
+</div>
+
+
 
 </div>
 
+
 </div>
+
 
 
 <script type="module">
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.1.7/firebase-app.js";
+
+import {
+  initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.1.7/firebase-app.js";
 
 
 import {
-getAuth,
-onAuthStateChanged,
-signOut
+  getAuth,
+  onAuthStateChanged,
+  signOut
 }
-from "https://www.gstatic.com/firebasejs/12.1.7/firebase-auth.js";
+from
+"https://www.gstatic.com/firebasejs/12.1.7/firebase-auth.js";
 
 
 import {
-getFirestore,
-collection,
-getCountFromServer
+  getFirestore,
+  collection,
+  getCountFromServer
 }
-from "https://www.gstatic.com/firebasejs/12.1.7/firebase-firestore.js";
+from
+"https://www.gstatic.com/firebasejs/12.1.7/firebase-firestore.js";
 
 
 import {
-getDatabase,
-ref,
-get
+  getDatabase,
+  ref,
+  onValue
 }
-from "https://www.gstatic.com/firebasejs/12.1.7/firebase-database.js";
+from
+"https://www.gstatic.com/firebasejs/12.1.7/firebase-database.js";
 
 
+
+/*
+|--------------------------------------------------------------------------
+| Firebase
+|--------------------------------------------------------------------------
+*/
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
+  apiKey:
+    "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
 
-authDomain: "ajel-booking.firebaseapp.com",
+  authDomain:
+    "ajel-booking.firebaseapp.com",
 
-databaseURL:
-"https://ajel-booking-default-rtdb.firebaseio.com",
+  databaseURL:
+    "https://ajel-booking-default-rtdb.firebaseio.com",
 
-projectId: "ajel-booking",
+  projectId:
+    "ajel-booking",
 
-storageBucket:
-"ajel-booking.firebasestorage.app",
+  storageBucket:
+    "ajel-booking.firebasestorage.app",
 
-messagingSenderId: "385816942991",
+  messagingSenderId:
+    "385816942991",
 
-appId:
-"1:385816942991:web:cc9ea0bff26643547613fa",
+  appId:
+    "1:385816942991:web:cc9ea0bff26643547613fa",
 
-measurementId:
-"G-0PDL44N8TG"
+  measurementId:
+    "G-0PDL44N8TG"
 
 };
 
 
 
-const app = initializeApp(firebaseConfig);
+const app =
+  initializeApp(firebaseConfig);
 
 
-const auth = getAuth(app);
+const auth =
+  getAuth(app);
 
 
-const firestore = getFirestore(app);
+const firestore =
+  getFirestore(app);
 
 
-const database = getDatabase(app);
-
-
-
-onAuthStateChanged(auth, async (user)=>{
-
-
-if(!user){
-
-window.location.replace("index.html");
-
-return;
-
-}
+const database =
+  getDatabase(app);
 
 
 
-// قراءة عدد الحجوزات من Realtime Database
+/*
+|--------------------------------------------------------------------------
+| التحقق من تسجيل الدخول
+|--------------------------------------------------------------------------
+*/
 
-try {
+onAuthStateChanged(
 
+  auth,
 
-const bookingsRef = ref(database,"bookings");
-
-
-const snapshot = await get(bookingsRef);
-
-
-if(snapshot.exists()){
-
-
-const bookings = snapshot.val();
+  async (user) => {
 
 
-document.getElementById("bookingsCount").textContent =
-Object.keys(bookings).length;
+    if (!user) {
+
+      window.location.replace(
+        "index.html"
+      );
+
+      return;
+
+    }
 
 
-}else{
+    /*
+    |--------------------------------------------------------------------------
+    | عداد الحجوزات - تحديث مباشر
+    |--------------------------------------------------------------------------
+    */
+
+    const bookingsRef =
+      ref(database, "bookings");
 
 
-document.getElementById("bookingsCount").textContent="0";
+    onValue(
+
+      bookingsRef,
+
+      (snapshot) => {
+
+        const bookingsCount =
+          document.getElementById(
+            "bookingsCount"
+          );
 
 
-}
+        if (snapshot.exists()) {
+
+          const bookings =
+            snapshot.val();
 
 
-}
+          const count =
+            Object.keys(bookings).length;
 
-catch(error){
+
+          bookingsCount.textContent =
+            count;
+
+        }
+
+        else {
+
+          bookingsCount.textContent =
+            "0";
+
+        }
+
+      },
+
+      (error) => {
+
+        console.error(
+          "خطأ في قراءة الحجوزات:",
+          error
+        );
+
+        document.getElementById(
+          "bookingsCount"
+        ).textContent = "0";
+
+      }
+
+    );
 
 
-console.error(
-"خطأ في قراءة الحجوزات:",
-error
+
+    /*
+    |--------------------------------------------------------------------------
+    | عدد طلبات التأشيرات
+    |--------------------------------------------------------------------------
+    */
+
+    try {
+
+      const visaSnapshot =
+        await getCountFromServer(
+          collection(
+            firestore,
+            "visaRequests"
+          )
+        );
+
+
+      document.getElementById(
+        "visaCount"
+      ).textContent =
+        visaSnapshot.data().count;
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "خطأ في قراءة التأشيرات:",
+        error
+      );
+
+      document.getElementById(
+        "visaCount"
+      ).textContent = "0";
+
+    }
+
+  }
+
 );
 
 
-document.getElementById("bookingsCount").textContent="0";
+
+/*
+|--------------------------------------------------------------------------
+| تسجيل الخروج
+|--------------------------------------------------------------------------
+*/
+
+document.getElementById(
+  "logoutBtn"
+).onclick = async function() {
 
 
-}
+  try {
 
+    await signOut(auth);
 
+    window.location.href =
+      "index.html";
 
+  }
 
+  catch (error) {
 
-// قراءة عدد التأشيرات من Firestore
+    alert(
+      error.message
+    );
 
-try {
-
-
-const visaSnapshot =
-await getCountFromServer(
-collection(firestore,"visaRequests")
-);
-
-
-document.getElementById("visaCount").textContent =
-visaSnapshot.data().count;
-
-
-}
-
-catch(error){
-
-
-console.error(
-"خطأ في قراءة التأشيرات:",
-error
-);
-
-
-document.getElementById("visaCount").textContent="0";
-
-
-}
-
-
-
-});
-
-
-
-
-// تسجيل الخروج
-
-document.getElementById("logoutBtn").onclick =
-async function(){
-
-
-try{
-
-
-await signOut(auth);
-
-
-window.location.href="index.html";
-
-
-}
-
-catch(error){
-
-
-alert(error.message);
-
-
-}
-
+  }
 
 };
 
@@ -370,4 +569,5 @@ alert(error.message);
 
 
 </body>
+
 </html>
