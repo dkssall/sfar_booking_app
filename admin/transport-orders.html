@@ -665,7 +665,55 @@ async function loadBookings() {
 
 loadBookings();
 
+async function silentRefresh() {
 
+  try {
+
+    const response =
+      await fetch(
+        DATABASE_URL + "/bookings.json?t=" + Date.now()
+      );
+
+
+    const bookings =
+      await response.json();
+
+
+    if (
+      bookings === null ||
+      typeof bookings !== "object"
+    ) {
+      return;
+    }
+
+
+    const count =
+      Object.keys(bookings).length;
+
+
+    const currentCount =
+      document.querySelectorAll(".order").length;
+
+
+    if (count !== currentCount) {
+
+      loadBookings();
+
+    }
+
+
+  }
+
+  catch(error) {
+
+    console.log(
+      "تحديث صامت:",
+      error
+    );
+
+  }
+
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -674,7 +722,7 @@ loadBookings();
 */
 
 setInterval(
-  loadBookings,
+  silentRefresh,
   5000
 );
 
