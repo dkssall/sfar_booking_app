@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'models/booking.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 // رقم آخر مسافر استخدم الحجز في جلسة التطبيق الحالية.
 String? currentPassengerPhone;
 
@@ -9,12 +16,7 @@ Future<void> _savePassengerPhone(String phone) async {
   currentPassengerPhone = phone.trim();
 }
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'models/booking.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -2282,4 +2284,3 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
     );
   }
 }
-
