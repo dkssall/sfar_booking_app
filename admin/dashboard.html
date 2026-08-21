@@ -17,14 +17,12 @@
   box-sizing: border-box;
 }
 
-
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #f5f7fb;
   color: #222;
 }
-
 
 .header {
   background: #1d4ed8;
@@ -33,12 +31,10 @@ body {
   text-align: center;
 }
 
-
 .header h1 {
   margin: 0;
   font-size: 28px;
 }
-
 
 .container {
   padding: 25px;
@@ -46,20 +42,17 @@ body {
   margin: auto;
 }
 
-
 .welcome {
   background: white;
   padding: 25px;
   border-radius: 15px;
   text-align: center;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
 }
-
 
 .welcome h2 {
   color: #1d4ed8;
 }
-
 
 .cards {
   display: grid;
@@ -68,20 +61,17 @@ body {
   margin-top: 20px;
 }
 
-
 .card {
   background: white;
   padding: 25px;
   border-radius: 15px;
   text-align: center;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
 }
-
 
 .card h3 {
   margin: 0 0 10px;
 }
-
 
 .number {
   font-size: 30px;
@@ -89,22 +79,13 @@ body {
   color: #1d4ed8;
 }
 
-
-.card.clickable {
+.clickable {
   cursor: pointer;
-  transition: transform .2s;
 }
 
-
-.card.clickable:hover {
-  transform: translateY(-3px);
-}
-
-
-.card.clickable:active {
+.clickable:active {
   transform: scale(.98);
 }
-
 
 button {
   padding: 10px 20px;
@@ -117,16 +98,9 @@ button {
   font-size: 16px;
 }
 
-
 .logout {
   background: #dc2626;
 }
-
-
-.transport-buttons {
-  margin-top: 15px;
-}
-
 
 .live {
   display: block;
@@ -135,8 +109,13 @@ button {
   color: #16a34a;
 }
 
+.error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 8px;
+}
 
-@media(max-width:600px){
+@media(max-width:600px) {
 
   .cards {
     grid-template-columns: 1fr;
@@ -163,7 +142,6 @@ button {
 </h1>
 
 </div>
-
 
 
 <div class="container">
@@ -195,7 +173,6 @@ button {
 <div class="cards">
 
 
-
 <!-- الحجوزات -->
 
 <div
@@ -210,13 +187,18 @@ button {
   id="bookingsCount"
   class="number">
 
-0
+...
 
 </div>
 
 <span class="live">
-● تحديث مباشر
+● تحديث تلقائي
 </span>
+
+<div
+  id="bookingsError"
+  class="error">
+</div>
 
 </div>
 
@@ -283,8 +265,6 @@ button {
 </h3>
 
 
-<div class="transport-buttons">
-
 <button
   onclick="location.href='add-trip.html'">
 
@@ -302,9 +282,6 @@ button {
 
 </div>
 
-</div>
-
-
 
 </div>
 
@@ -315,6 +292,12 @@ button {
 
 <script type="module">
 
+
+/*
+|--------------------------------------------------------------------------
+| Firebase Authentication
+|--------------------------------------------------------------------------
+*/
 
 import {
   initializeApp
@@ -341,21 +324,6 @@ from
 "https://www.gstatic.com/firebasejs/12.1.7/firebase-firestore.js";
 
 
-import {
-  getDatabase,
-  ref,
-  onValue
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.7/firebase-database.js";
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Firebase
-|--------------------------------------------------------------------------
-*/
 
 const firebaseConfig = {
 
@@ -386,7 +354,6 @@ const firebaseConfig = {
 };
 
 
-
 const app =
   initializeApp(firebaseConfig);
 
@@ -399,14 +366,146 @@ const firestore =
   getFirestore(app);
 
 
-const database =
-  getDatabase(app);
+
+/*
+|--------------------------------------------------------------------------
+| رابط قاعدة البيانات مباشرة
+|--------------------------------------------------------------------------
+*/
+
+const DATABASE_URL =
+  "https://ajel-booking-default-rtdb.firebaseio.com";
+
+
+
+const bookingsCount =
+  document.getElementById(
+    "bookingsCount"
+  );
+
+
+const bookingsError =
+  document.getElementById(
+    "bookingsError"
+  );
 
 
 
 /*
 |--------------------------------------------------------------------------
-| التحقق من تسجيل الدخول
+| قراءة عدد الحجوزات مباشرة
+|--------------------------------------------------------------------------
+*/
+
+async function loadBookingsCount() {
+
+  try {
+
+    const url =
+      DATABASE_URL +
+      "/bookings.json?t=" +
+      Date.now();
+
+
+    const response =
+      await fetch(url, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "HTTP " + response.status
+      );
+
+    }
+
+
+    const bookings =
+      await response.json();
+
+
+    if (
+      bookings === null ||
+      typeof bookings !== "object"
+    ) {
+
+      bookingsCount.textContent =
+        "0";
+
+      return;
+
+    }
+
+
+    const count =
+      Object.keys(bookings).length;
+
+
+    bookingsCount.textContent =
+      count;
+
+
+    bookingsError.textContent =
+      "";
+
+
+    console.log(
+      "عدد الحجوزات:",
+      count
+    );
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "خطأ في قراءة الحجوزات:",
+      error
+    );
+
+
+    bookingsCount.textContent =
+      "0";
+
+
+    bookingsError.textContent =
+      "تعذر قراءة الحجوزات";
+
+  }
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| أول قراءة
+|--------------------------------------------------------------------------
+*/
+
+loadBookingsCount();
+
+
+
+/*
+|--------------------------------------------------------------------------
+| تحديث كل 5 ثوانٍ
+|--------------------------------------------------------------------------
+*/
+
+setInterval(
+  loadBookingsCount,
+  5000
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| تسجيل الدخول
 |--------------------------------------------------------------------------
 */
 
@@ -415,7 +514,6 @@ onAuthStateChanged(
   auth,
 
   async (user) => {
-
 
     if (!user) {
 
@@ -430,70 +528,7 @@ onAuthStateChanged(
 
     /*
     |--------------------------------------------------------------------------
-    | عداد الحجوزات - تحديث مباشر
-    |--------------------------------------------------------------------------
-    */
-
-    const bookingsRef =
-      ref(database, "bookings");
-
-
-    onValue(
-
-      bookingsRef,
-
-      (snapshot) => {
-
-        const bookingsCount =
-          document.getElementById(
-            "bookingsCount"
-          );
-
-
-        if (snapshot.exists()) {
-
-          const bookings =
-            snapshot.val();
-
-
-          const count =
-            Object.keys(bookings).length;
-
-
-          bookingsCount.textContent =
-            count;
-
-        }
-
-        else {
-
-          bookingsCount.textContent =
-            "0";
-
-        }
-
-      },
-
-      (error) => {
-
-        console.error(
-          "خطأ في قراءة الحجوزات:",
-          error
-        );
-
-        document.getElementById(
-          "bookingsCount"
-        ).textContent = "0";
-
-      }
-
-    );
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | عدد طلبات التأشيرات
+    | عدد التأشيرات
     |--------------------------------------------------------------------------
     */
 
@@ -515,16 +550,18 @@ onAuthStateChanged(
 
     }
 
-    catch (error) {
+    catch(error) {
 
       console.error(
         "خطأ في قراءة التأشيرات:",
         error
       );
 
+
       document.getElementById(
         "visaCount"
-      ).textContent = "0";
+      ).textContent =
+        "0";
 
     }
 
@@ -544,7 +581,6 @@ document.getElementById(
   "logoutBtn"
 ).onclick = async function() {
 
-
   try {
 
     await signOut(auth);
@@ -554,7 +590,7 @@ document.getElementById(
 
   }
 
-  catch (error) {
+  catch(error) {
 
     alert(
       error.message
@@ -563,7 +599,6 @@ document.getElementById(
   }
 
 };
-
 
 </script>
 
