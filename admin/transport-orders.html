@@ -597,14 +597,16 @@ async function loadBookings() {
 
 
         <div class="row">
-          <span class="label">
-            📌 الحالة:
-          </span>
+  <span class="label">
+    📌 الحالة:
+  </span>
 
-          <span class="status">
-            ${status}
-          </span>
-        </div>
+  <span class="status">
+    ${status}
+  </span>
+</div>
+
+
 
 
         <div class="row">
@@ -614,7 +616,23 @@ async function loadBookings() {
 
           ${createdAt}
         </div>
+<div class="actions">
 
+  <button
+    type="button"
+    class="confirmBtn"
+    data-key="${key}">
+    ✅ تأكيد الحجز
+  </button>
+
+  <button
+    type="button"
+    class="cancelBtn"
+    data-key="${key}">
+    ❌ إلغاء الحجز
+  </button>
+
+</div>
       `;
 
 
@@ -650,13 +668,128 @@ async function loadBookings() {
         ومن قواعد Realtime Database.
       </div>
     `;
-
+document.querySelectorAll('.cancelBtn').forEach(button => {
+  button.addEventListener('click', function () {
+    const key = this.dataset.key;
+    cancelBooking(key);
+  });
+});
   }
 
 }
 
+async function confirmBooking(bookingKey) {
 
+  if (!confirm("هل تريد تأكيد هذا الحجز؟")) {
+    return;
+  }
 
+  try {
+
+    const response = await fetch(
+      DATABASE_URL +
+      "/bookings/" +
+      bookingKey +
+      ".json",
+      {
+        method: "PATCH",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          status: "confirmed"
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "HTTP " + response.status
+      );
+    }
+
+    alert("تم تأكيد الحجز ✅");
+
+    await loadBookings();
+
+  } catch (error) {
+
+    console.error(
+      "خطأ في تأكيد الحجز:",
+      error
+    );
+
+    alert(
+      "حدث خطأ أثناء تأكيد الحجز: " +
+      error.message
+    );
+
+  }
+
+}
+async function cancelBooking(bookingKey) {
+
+  const reason = prompt(
+    "اكتب سبب إلغاء الحجز:"
+  );
+
+  if (reason === null) {
+    return;
+  }
+
+  if (reason.trim() === "") {
+    alert("يجب كتابة سبب الإلغاء.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      DATABASE_URL +
+      "/bookings/" +
+      bookingKey +
+      ".json",
+      {
+        method: "PATCH",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          status: "cancelled",
+          cancellationReason: reason.trim()
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "HTTP " + response.status
+      );
+    }
+
+    alert("تم إلغاء الحجز ❌");
+
+    await loadBookings();
+
+  } catch (error) {
+
+    console.error(
+      "خطأ في إلغاء الحجز:",
+      error
+    );
+
+    alert(
+      "حدث خطأ أثناء إلغاء الحجز: " +
+      error.message
+    );
+
+  }
+
+}
 /*
 |--------------------------------------------------------------------------
 | تحميل أول مرة
