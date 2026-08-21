@@ -50,10 +50,7 @@ class AjelApp extends StatelessWidget {
 }
 
 
-// =========================
-// تسجيل دخول العميل
-// =========================
-
+/// بوابة المصادقة: إذا كان العميل مسجل الدخول نعرض التطبيق، وإلا نعرض شاشة الدخول.
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
@@ -63,224 +60,35 @@ class AuthGate extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Directionality(
-            textDirection: TextDirection.rtl,
-            child: Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            ),
-          );
+          return const _AuthLoadingPage();
         }
 
-        if (snapshot.hasData) {
-          return const HomePage();
+        if (snapshot.hasError) {
+          return const _AuthLoadingPage();
         }
 
-        return const LoginPage();
+        if (snapshot.data == null) {
+          return const AuthPage();
+        }
+
+        return const HomePage();
       },
     );
   }
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  bool loading = false;
-  bool obscurePassword = true;
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> login() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text;
-
-    if (email.isEmpty || password.isEmpty) {
-      _message('يرجى إدخال البريد الإلكتروني وكلمة المرور');
-      return;
-    }
-
-    setState(() => loading = true);
-
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      String message;
-
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'لا يوجد حساب بهذا البريد الإلكتروني';
-          break;
-        case 'wrong-password':
-        case 'invalid-credential':
-          message = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-          break;
-        case 'invalid-email':
-          message = 'البريد الإلكتروني غير صحيح';
-          break;
-        case 'too-many-requests':
-          message = 'تمت محاولات كثيرة، حاول لاحقًا';
-          break;
-        default:
-          message = 'تعذر تسجيل الدخول: ${e.message ?? e.code}';
-      }
-
-      _message(message);
-    } catch (e) {
-      _message('حدث خطأ أثناء تسجيل الدخول');
-    } finally {
-      if (mounted) setState(() => loading = false);
-    }
-  }
-
-  void _message(String text) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text, textDirection: TextDirection.rtl)),
-    );
-  }
+class _AuthLoadingPage extends StatelessWidget {
+  const _AuthLoadingPage();
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
+    return const Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: AjelApp.background,
-        body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Icons.flight_takeoff_rounded,
-                          size: 65,
-                          color: AjelApp.blue,
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'عاجل',
-                          style: TextStyle(
-                            color: AjelApp.darkBlue,
-                            fontSize: 34,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const Text(
-                          'تسجيل دخول العميل',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        TextField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textDirection: TextDirection.ltr,
-                          decoration: const InputDecoration(
-                            labelText: 'البريد الإلكتروني',
-                            prefixIcon: Icon(Icons.email_outlined),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        TextField(
-                          controller: passwordController,
-                          obscureText: obscurePassword,
-                          textDirection: TextDirection.ltr,
-                          decoration: InputDecoration(
-                            labelText: 'كلمة المرور',
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            border: const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  obscurePassword = !obscurePassword;
-                                });
-                              },
-                              icon: Icon(
-                                obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 22),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: loading ? null : login,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AjelApp.blue,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            child: loading
-                                ? const SizedBox(
-                                    width: 23,
-                                    height: 23,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'تسجيل الدخول',
-                                    style: TextStyle(fontSize: 17),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextButton(
-                          onPressed: loading
-                              ? null
-                              : () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const RegisterPage(),
-                                    ),
-                                  );
-                                },
-                          child: const Text(
-                            'ليس لديك حساب؟ إنشاء حساب جديد',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: AjelApp.blue,
           ),
         ),
       ),
@@ -288,128 +96,552 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+enum _AuthMethod { email, phone }
+
+class AuthPage extends StatefulWidget {
+  const AuthPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<AuthPage> createState() => _AuthPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final nameController = TextEditingController();
-  final phoneController = TextEditingController();
+class _AuthPageState extends State<AuthPage> {
+  final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final smsController = TextEditingController();
 
-  bool loading = false;
+  _AuthMethod method = _AuthMethod.email;
+  bool registering = false;
   bool obscurePassword = true;
-  bool obscureConfirmPassword = true;
+  bool loading = false;
+  bool waitingForSms = false;
+
+  String? verificationId;
+  int? resendToken;
+
+  // بيانات التسجيل التي نحتاجها عند إكمال التحقق بالهاتف.
+  String pendingName = '';
+  String pendingEmail = '';
+  String pendingPassword = '';
+  bool pendingRegistration = false;
+
+  FirebaseAuth get auth => FirebaseAuth.instance;
 
   @override
   void dispose() {
-    nameController.dispose();
-    phoneController.dispose();
     emailController.dispose();
     passwordController.dispose();
-    confirmPasswordController.dispose();
+    nameController.dispose();
+    phoneController.dispose();
+    smsController.dispose();
     super.dispose();
   }
 
-  Future<void> register() async {
-    final name = nameController.text.trim();
-    final phone = phoneController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordController.text;
-    final confirmPassword = confirmPasswordController.text;
-
-    if (name.isEmpty ||
-        phone.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        confirmPassword.isEmpty) {
-      _message('يرجى تعبئة جميع البيانات');
-      return;
-    }
-
-    if (password.length < 6) {
-      _message('كلمة المرور يجب أن تكون 6 أحرف أو أكثر');
-      return;
-    }
-
-    if (password != confirmPassword) {
-      _message('كلمتا المرور غير متطابقتين');
-      return;
-    }
-
-    setState(() => loading = true);
-
-    try {
-      final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      final user = credential.user;
-
-      if (user != null) {
-        await user.updateDisplayName(name);
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .set({
-          'uid': user.uid,
-          'name': name,
-          'phone': phone,
-          'email': email,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      }
-
-      await _savePassengerPhone(phone);
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('تم إنشاء الحساب وتسجيل الدخول بنجاح ✓'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      String message;
-
-      switch (e.code) {
-        case 'email-already-in-use':
-          message = 'هذا البريد الإلكتروني مستخدم مسبقًا';
-          break;
-        case 'invalid-email':
-          message = 'البريد الإلكتروني غير صحيح';
-          break;
-        case 'weak-password':
-          message = 'كلمة المرور ضعيفة، استخدم 6 أحرف أو أكثر';
-          break;
-        default:
-          message = 'تعذر إنشاء الحساب: ${e.message ?? e.code}';
-      }
-
-      _message(message);
-    } catch (e) {
-      _message('حدث خطأ أثناء إنشاء الحساب');
-    } finally {
-      if (mounted) setState(() => loading = false);
+  String _authError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return 'البريد الإلكتروني غير صحيح.';
+      case 'user-not-found':
+        return 'لا يوجد حساب بهذا البريد الإلكتروني.';
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+      case 'email-already-in-use':
+        return 'هذا البريد الإلكتروني مستخدم في حساب آخر.';
+      case 'weak-password':
+        return 'كلمة المرور ضعيفة. استخدم 6 أحرف أو أرقام على الأقل.';
+      case 'invalid-phone-number':
+        return 'رقم الهاتف غير صحيح. اكتب الرقم بصيغة دولية مثل +9677XXXXXXXX.';
+      case 'invalid-verification-code':
+        return 'رمز التحقق غير صحيح.';
+      case 'session-expired':
+        return 'انتهت صلاحية رمز التحقق. أرسل رمزًا جديدًا.';
+      case 'too-many-requests':
+        return 'تمت محاولات كثيرة. حاول مرة أخرى بعد قليل.';
+      case 'quota-exceeded':
+        return 'تم تجاوز حد رسائل SMS المتاح حاليًا.';
+      case 'network-request-failed':
+        return 'تعذر الاتصال بالإنترنت. تحقق من الاتصال وحاول مرة أخرى.';
+      case 'credential-already-in-use':
+        return 'بيانات الدخول هذه مرتبطة بحساب آخر.';
+      case 'provider-already-linked':
+        return 'طريقة الدخول هذه مرتبطة بالحساب بالفعل.';
+      default:
+        return e.message ?? 'حدث خطأ أثناء تسجيل الدخول.';
     }
   }
 
   void _message(String text) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text, textDirection: TextDirection.rtl)),
+      SnackBar(
+        content: Text(text, textDirection: TextDirection.rtl),
+        behavior: SnackBarBehavior.floating,
+      ),
     );
+  }
+
+  String _cleanPhone(String value) {
+    return value.trim().replaceAll(' ', '').replaceAll('-', '');
+  }
+
+  Future<void> _saveUserProfile(User user, {
+    String? name,
+    String? phone,
+    String? email,
+    String? provider,
+  }) async {
+    final profile = <String, dynamic>{
+      'uid': user.uid,
+      'name': (name ?? user.displayName ?? '').trim(),
+      'email': (email ?? user.email ?? '').trim(),
+      'phone': (phone ?? user.phoneNumber ?? '').trim(),
+      'authProvider': provider ?? (user.providerData.isNotEmpty
+          ? user.providerData.first.providerId
+          : 'unknown'),
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set(profile, SetOptions(merge: true));
+    } catch (_) {
+      // عدم حفظ الملف الشخصي لا يمنع العميل من الدخول إلى التطبيق.
+    }
+
+    final savedPhone = (phone ?? user.phoneNumber ?? '').trim();
+    if (savedPhone.isNotEmpty) {
+      await _savePassengerPhone(savedPhone);
+    }
+  }
+
+  Future<void> _emailLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => loading = true);
+    try {
+      final credential = await auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+
+      await _saveUserProfile(credential.user!);
+    } on FirebaseAuthException catch (e) {
+      _message(_authError(e));
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> _emailRegister() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final phone = _cleanPhone(phoneController.text);
+    if (!phone.startsWith('+')) {
+      _message('رقم الهاتف يجب أن يبدأ بعلامة + مع رمز الدولة.');
+      return;
+    }
+
+    setState(() => loading = true);
+
+    try {
+      final credential = await auth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+
+      final user = credential.user!;
+      await user.updateDisplayName(nameController.text.trim());
+
+      // بعد إنشاء حساب البريد، نتحقق من الهاتف ونربطه بنفس حساب Firebase.
+      pendingName = nameController.text.trim();
+      pendingEmail = emailController.text.trim();
+      pendingPassword = passwordController.text;
+      pendingRegistration = true;
+
+      await _sendPhoneCode(phone, forRegistration: true);
+    } on FirebaseAuthException catch (e) {
+      _message(_authError(e));
+      if (auth.currentUser != null &&
+          auth.currentUser!.email == emailController.text.trim()) {
+        // الحساب أُنشئ بالفعل؛ نتركه مسجلًا بدل إلغاء العملية.
+      }
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> _phoneLogin() async {
+    final phone = _cleanPhone(phoneController.text);
+    if (phone.isEmpty || !phone.startsWith('+')) {
+      _message('اكتب رقم الهاتف بصيغة دولية مثل +9677XXXXXXXX.');
+      return;
+    }
+
+    setState(() => loading = true);
+    pendingRegistration = false;
+
+    try {
+      await _sendPhoneCode(phone, forRegistration: false);
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> _phoneRegister() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final phone = _cleanPhone(phoneController.text);
+    if (!phone.startsWith('+')) {
+      _message('رقم الهاتف يجب أن يبدأ بعلامة + مع رمز الدولة.');
+      return;
+    }
+
+    setState(() => loading = true);
+
+    pendingName = nameController.text.trim();
+    pendingEmail = emailController.text.trim();
+    pendingPassword = passwordController.text;
+    pendingRegistration = true;
+
+    try {
+      await _sendPhoneCode(phone, forRegistration: true);
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> _sendPhoneCode(
+    String phone, {
+    required bool forRegistration,
+  }) async {
+    try {
+      await auth.verifyPhoneNumber(
+        phoneNumber: phone,
+        timeout: const Duration(seconds: 60),
+        forceResendingToken: resendToken,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          try {
+            if (forRegistration && auth.currentUser != null) {
+              await _linkPhoneCredential(credential, phone);
+            } else {
+              final result = await auth.signInWithCredential(credential);
+              if (forRegistration) {
+                await _completePhoneRegistration(result.user!, phone);
+              } else {
+                await _saveUserProfile(
+                  result.user!,
+                  phone: phone,
+                  provider: 'phone',
+                );
+              }
+            }
+          } on FirebaseAuthException catch (e) {
+            _message(_authError(e));
+          }
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (mounted) {
+            setState(() => waitingForSms = false);
+          }
+          _message(_authError(e));
+        },
+        codeSent: (String id, int? token) {
+          if (!mounted) return;
+          setState(() {
+            verificationId = id;
+            resendToken = token;
+            waitingForSms = true;
+          });
+          _message('تم إرسال رمز التحقق إلى رقم الهاتف.');
+        },
+        codeAutoRetrievalTimeout: (String id) {
+          verificationId = id;
+        },
+      );
+    } on FirebaseAuthException catch (e) {
+      _message(_authError(e));
+    }
+  }
+
+  Future<void> _verifySmsCode() async {
+    final code = smsController.text.trim();
+    if (verificationId == null) {
+      _message('أرسل رمز التحقق أولًا.');
+      return;
+    }
+    if (code.length < 6) {
+      _message('أدخل رمز التحقق المكوّن من 6 أرقام.');
+      return;
+    }
+
+    setState(() => loading = true);
+
+    try {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId!,
+        smsCode: code,
+      );
+
+      final phone = _cleanPhone(phoneController.text);
+      if (pendingRegistration && auth.currentUser != null) {
+        await _linkPhoneCredential(credential, phone);
+      } else {
+        final result = await auth.signInWithCredential(credential);
+        if (pendingRegistration) {
+          await _completePhoneRegistration(result.user!, phone);
+        } else {
+          await _saveUserProfile(
+            result.user!,
+            phone: phone,
+            provider: 'phone',
+          );
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          waitingForSms = false;
+          verificationId = null;
+          resendToken = null;
+          smsController.clear();
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      _message(_authError(e));
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
+  }
+
+  Future<void> _completePhoneRegistration(User user, String phone) async {
+    if (pendingEmail.isNotEmpty && pendingPassword.isNotEmpty && user.email == null) {
+      try {
+        final emailCredential = EmailAuthProvider.credential(
+          email: pendingEmail,
+          password: pendingPassword,
+        );
+        await user.linkWithCredential(emailCredential);
+      } on FirebaseAuthException catch (e) {
+        if (e.code != 'provider-already-linked') rethrow;
+      }
+    }
+
+    if (pendingName.isNotEmpty) {
+      try {
+        await user.updateDisplayName(pendingName);
+      } catch (_) {}
+    }
+
+    await _saveUserProfile(
+      user,
+      name: pendingName,
+      email: pendingEmail,
+      phone: phone,
+      provider: 'email+phone',
+    );
+
+    pendingRegistration = false;
+
+    if (mounted) {
+      setState(() {
+        waitingForSms = false;
+        verificationId = null;
+        resendToken = null;
+        smsController.clear();
+      });
+    }
+  }
+
+  Future<void> _linkPhoneCredential(
+    PhoneAuthCredential credential,
+    String phone,
+  ) async {
+    final user = auth.currentUser;
+    if (user == null) {
+      throw FirebaseAuthException(
+        code: 'user-not-found',
+        message: 'لم يتم العثور على الحساب الحالي.',
+      );
+    }
+
+    try {
+      await user.linkWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      // إذا كان الهاتف مرتبطًا بالفعل بنفس الحساب، نكمل بدون تعطيل الدخول.
+      if (e.code != 'provider-already-linked') rethrow;
+    }
+
+    // في تسجيل الحساب الذي بدأ برقم الهاتف، نربط البريد وكلمة المرور
+    // بنفس حساب Firebase حتى يستطيع العميل الدخول بالطريقتين لاحقًا.
+    if (user.email == null && pendingEmail.isNotEmpty && pendingPassword.isNotEmpty) {
+      try {
+        final emailCredential = EmailAuthProvider.credential(
+          email: pendingEmail,
+          password: pendingPassword,
+        );
+        await user.linkWithCredential(emailCredential);
+      } on FirebaseAuthException catch (e) {
+        if (e.code != 'provider-already-linked') rethrow;
+      }
+    }
+
+    await _saveUserProfile(
+      user,
+      name: pendingName,
+      email: pendingEmail,
+      phone: phone,
+      provider: 'email+phone',
+    );
+
+    if (mounted) {
+      setState(() {
+        waitingForSms = false;
+        verificationId = null;
+        resendToken = null;
+        smsController.clear();
+      });
+    }
+
+    if (pendingEmail.isNotEmpty && pendingPassword.isNotEmpty) {
+      // البريد وكلمة المرور أُنشئا بالفعل في التسجيل بالبريد، أو سيتم ربطهما
+      // أدناه في حالة التسجيل الذي بدأ برقم الهاتف.
+      if (!user.emailVerified && user.email == pendingEmail) {
+        try {
+          await user.sendEmailVerification();
+        } catch (_) {}
+      }
+    }
+
+    pendingRegistration = false;
+  }
+
+  Future<void> _finishPhoneRegistrationWithEmail() async {
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    if (pendingEmail.isNotEmpty && pendingPassword.isNotEmpty && user.email == null) {
+      try {
+        final emailCredential = EmailAuthProvider.credential(
+          email: pendingEmail,
+          password: pendingPassword,
+        );
+        await user.linkWithCredential(emailCredential);
+      } on FirebaseAuthException catch (e) {
+        if (e.code != 'provider-already-linked') {
+          _message(_authError(e));
+          return;
+        }
+      }
+    }
+
+    await _saveUserProfile(
+      user,
+      name: pendingName,
+      email: pendingEmail,
+      phone: _cleanPhone(phoneController.text),
+      provider: 'email+phone',
+    );
+    pendingRegistration = false;
+  }
+
+  Future<void> _forgotPassword() async {
+    final email = emailController.text.trim();
+    if (email.isEmpty) {
+      _message('اكتب بريدك الإلكتروني أولًا.');
+      return;
+    }
+
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+      _message('تم إرسال رابط استعادة كلمة المرور إلى بريدك.');
+    } on FirebaseAuthException catch (e) {
+      _message(_authError(e));
+    }
+  }
+
+  Future<void> _submit() async {
+    if (waitingForSms) {
+      await _verifySmsCode();
+      return;
+    }
+
+    if (method == _AuthMethod.email) {
+      if (registering) {
+        await _emailRegister();
+      } else {
+        await _emailLogin();
+      }
+    } else {
+      if (registering) {
+        await _phoneRegister();
+      } else {
+        await _phoneLogin();
+      }
+    }
+  }
+
+  void _changeMethod(_AuthMethod newMethod) {
+    if (loading) return;
+    setState(() {
+      method = newMethod;
+      waitingForSms = false;
+      verificationId = null;
+      resendToken = null;
+      smsController.clear();
+    });
+  }
+
+  Widget _field({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+    String? Function(String?)? validator,
+    String? hintText,
+    Widget? suffixIcon,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.right,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        prefixIcon: Icon(icon),
+        suffixIcon: suffixIcon,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFD6DEEC)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(
+            color: AjelApp.blue,
+            width: 1.6,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String? _required(String? value, String message) {
+    if (value == null || value.trim().isEmpty) return message;
+    return null;
   }
 
   @override
@@ -417,148 +649,490 @@ class _RegisterPageState extends State<RegisterPage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('إنشاء حساب'),
-          centerTitle: true,
-          backgroundColor: AjelApp.blue,
-          foregroundColor: Colors.white,
-        ),
         backgroundColor: AjelApp.background,
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 500),
-                child: Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22),
+            padding: const EdgeInsets.fromLTRB(20, 28, 20, 30),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 8),
+                  const Icon(
+                    Icons.flight_takeoff_rounded,
+                    color: AjelApp.blue,
+                    size: 48,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
+                  const SizedBox(height: 2),
+                  const Text(
+                    'عاجل',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AjelApp.darkBlue,
+                      fontSize: 46,
+                      fontWeight: FontWeight.w900,
+                      height: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'للسفر والحجوزات',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AjelApp.blue,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'احجز تذاكرك وتأشيرتك بكل سهولة ومن أي مكان',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AjelApp.darkBlue,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 26),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F0FF),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
                       children: [
-                        const Text(
-                          'بيانات العميل',
-                          style: TextStyle(
-                            fontSize: 23,
-                            fontWeight: FontWeight.w900,
-                            color: AjelApp.darkBlue,
+                        Expanded(
+                          child: _methodButton(
+                            title: 'البريد الإلكتروني',
+                            icon: Icons.email_outlined,
+                            selected: method == _AuthMethod.email,
+                            onTap: () => _changeMethod(_AuthMethod.email),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        TextField(
-                          controller: nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'اسم العميل',
-                            prefixIcon: Icon(Icons.person_outline),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        TextField(
-                          controller: phoneController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            labelText: 'رقم الهاتف',
-                            prefixIcon: Icon(Icons.phone_outlined),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        TextField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textDirection: TextDirection.ltr,
-                          decoration: const InputDecoration(
-                            labelText: 'البريد الإلكتروني',
-                            prefixIcon: Icon(Icons.email_outlined),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        TextField(
-                          controller: passwordController,
-                          obscureText: obscurePassword,
-                          textDirection: TextDirection.ltr,
-                          decoration: InputDecoration(
-                            labelText: 'كلمة المرور',
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            border: const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  obscurePassword = !obscurePassword;
-                                });
-                              },
-                              icon: Icon(
-                                obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        TextField(
-                          controller: confirmPasswordController,
-                          obscureText: obscureConfirmPassword,
-                          textDirection: TextDirection.ltr,
-                          decoration: InputDecoration(
-                            labelText: 'تأكيد كلمة المرور',
-                            prefixIcon: const Icon(Icons.lock_reset_outlined),
-                            border: const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  obscureConfirmPassword =
-                                      !obscureConfirmPassword;
-                                });
-                              },
-                              icon: Icon(
-                                obscureConfirmPassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 22),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
-                            onPressed: loading ? null : register,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AjelApp.blue,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            child: loading
-                                ? const SizedBox(
-                                    width: 23,
-                                    height: 23,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'إنشاء الحساب',
-                                    style: TextStyle(fontSize: 17),
-                                  ),
+                        Expanded(
+                          child: _methodButton(
+                            title: 'رقم الهاتف',
+                            icon: Icons.phone_outlined,
+                            selected: method == _AuthMethod.phone,
+                            onTap: () => _changeMethod(_AuthMethod.phone),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
+                  const SizedBox(height: 22),
+                  if (waitingForSms) ...[
+                    const Text(
+                      'تم إرسال رمز التحقق',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: AjelApp.darkBlue,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      'أدخل الرمز المرسل إلى ${_cleanPhone(phoneController.text)}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                    const SizedBox(height: 18),
+                    _field(
+                      controller: smsController,
+                      label: 'رمز التحقق',
+                      icon: Icons.lock_outline,
+                      keyboardType: TextInputType.number,
+                      hintText: '000000',
+                      validator: (value) {
+                        if (value == null || value.trim().length < 6) {
+                          return 'أدخل رمز التحقق المكوّن من 6 أرقام';
+                        }
+                        return null;
+                      },
+                    ),
+                  ] else ...[
+                    if (registering) ...[
+                      _field(
+                        controller: nameController,
+                        label: 'الاسم الكامل',
+                        icon: Icons.person_outline,
+                        keyboardType: TextInputType.name,
+                        validator: (value) =>
+                            _required(value, 'اكتب الاسم الكامل'),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+                    if (method == _AuthMethod.email || registering) ...[
+                      _field(
+                        controller: emailController,
+                        label: 'البريد الإلكتروني',
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'اكتب البريد الإلكتروني';
+                          }
+                          if (!value.contains('@') || !value.contains('.')) {
+                            return 'البريد الإلكتروني غير صحيح';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+                    if (method == _AuthMethod.phone || registering) ...[
+                      _field(
+                        controller: phoneController,
+                        label: 'رقم الهاتف',
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                        hintText: '+9677XXXXXXXX',
+                        validator: registering && method == _AuthMethod.phone
+                            ? (value) => _required(value, 'اكتب رقم الهاتف')
+                            : null,
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+                    if (method == _AuthMethod.email || registering) ...[
+                      _field(
+                        controller: passwordController,
+                        label: 'كلمة المرور',
+                        icon: Icons.lock_outline,
+                        obscureText: obscurePassword,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'اكتب كلمة المرور';
+                          }
+                          if (value.length < 6) {
+                            return 'كلمة المرور 6 أحرف أو أرقام على الأقل';
+                          }
+                          return null;
+                        },
+                        suffixIcon: IconButton(
+                          onPressed: () => setState(
+                            () => obscurePassword = !obscurePassword,
+                          ),
+                          icon: Icon(
+                            obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                        ),
+                      ),
+                      if (!registering && method == _AuthMethod.email) ...[
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: loading ? null : _forgotPassword,
+                            child: const Text('نسيت كلمة المرور؟'),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ],
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 54,
+                    child: ElevatedButton(
+                      onPressed: loading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AjelApp.blue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      child: loading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              waitingForSms
+                                  ? 'تحقق من الرمز'
+                                  : registering
+                                      ? 'إنشاء حساب جديد'
+                                      : 'تسجيل الدخول',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      const Expanded(child: Divider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(registering ? 'لديك حساب؟' : 'أو'),
+                      ),
+                      const Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: loading
+                        ? null
+                        : () {
+                            setState(() {
+                              registering = !registering;
+                              waitingForSms = false;
+                              verificationId = null;
+                              resendToken = null;
+                              smsController.clear();
+                            });
+                          },
+                    icon: Icon(
+                      registering
+                          ? Icons.login_rounded
+                          : Icons.person_add_alt_1_rounded,
+                    ),
+                    label: Text(
+                      registering ? 'تسجيل الدخول' : 'إنشاء حساب جديد',
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AjelApp.blue,
+                      minimumSize: const Size.fromHeight(52),
+                      side: const BorderSide(color: AjelApp.blue),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _AuthFeature(
+                        icon: Icons.lock_outline,
+                        title: 'آمن وموثوق',
+                      ),
+                      _AuthFeature(
+                        icon: Icons.support_agent_outlined,
+                        title: 'دعم على مدار الساعة',
+                      ),
+                      _AuthFeature(
+                        icon: Icons.public_outlined,
+                        title: 'في أي مكان',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'بتسجيلك في عاجل، نحافظ على بيانات حسابك وحجوزاتك بشكل آمن.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _methodButton({
+    required String title,
+    required IconData icon,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(13),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: selected ? AjelApp.blue : Colors.transparent,
+          borderRadius: BorderRadius.circular(13),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: selected ? Colors.white : AjelApp.darkBlue,
+            ),
+            const SizedBox(width: 7),
+            Flexible(
+              child: Text(
+                title,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: selected ? Colors.white : AjelApp.darkBlue,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AuthFeature extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  const _AuthFeature({
+    required this.icon,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: const BoxDecoration(
+            color: Color(0xFFEAF1FF),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: AjelApp.blue,
+            size: 22,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AccountPage extends StatelessWidget {
+  const AccountPage({super.key});
+
+  Future<Map<String, dynamic>?> _profile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    return doc.data();
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('حسابي'),
+          centerTitle: true,
+          backgroundColor: AjelApp.blue,
+          foregroundColor: Colors.white,
+        ),
+        body: FutureBuilder<Map<String, dynamic>?>(
+          future: _profile(),
+          builder: (context, snapshot) {
+            final data = snapshot.data ?? <String, dynamic>{};
+            final name = (data['name'] ?? user?.displayName ?? 'العميل')
+                .toString();
+            final email = (data['email'] ?? user?.email ?? '').toString();
+            final phone = (data['phone'] ?? user?.phoneNumber ?? '').toString();
+
+            return ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                CircleAvatar(
+                  radius: 42,
+                  backgroundColor: const Color(0xFFE8F0FF),
+                  child: const Icon(
+                    Icons.person,
+                    size: 45,
+                    color: AjelApp.blue,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  name.isEmpty ? 'العميل' : name,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w900,
+                    color: AjelApp.darkBlue,
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Card(
+                  elevation: 1,
+                  child: Column(
+                    children: [
+                      if (email.isNotEmpty)
+                        ListTile(
+                          leading: const Icon(Icons.email_outlined,
+                              color: AjelApp.blue),
+                          title: const Text('البريد الإلكتروني'),
+                          subtitle: Text(email),
+                        ),
+                      if (phone.isNotEmpty)
+                        ListTile(
+                          leading: const Icon(Icons.phone_outlined,
+                              color: AjelApp.blue),
+                          title: const Text('رقم الهاتف'),
+                          subtitle: Text(phone),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _logout(context),
+                    icon: const Icon(Icons.logout),
+                    label: const Text(
+                      'تسجيل الخروج',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: const BorderSide(color: Colors.red),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -1388,6 +1962,20 @@ child: Image.asset(
       onTap: () async {
         setState(() => selectedIndex = index);
 
+        // فتح صفحة الحساب فعليًا.
+        if (index == 0) {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AccountPage(),
+            ),
+          );
+          if (mounted) {
+            setState(() => selectedIndex = 4);
+          }
+          return;
+        }
+
         // فتح صفحة حجوزاتي فعليًا بدل عرض رسالة فقط
         if (index == 1) {
           await Navigator.push(
@@ -1940,6 +2528,28 @@ class _BookingPageState extends State<BookingPage> {
   int passengerCount = 1;
 
   String paymentMethod = 'cash';
+
+  @override
+  void initState() {
+    super.initState();
+    final authPhone = FirebaseAuth.instance.currentUser?.phoneNumber;
+    if (authPhone != null && authPhone.trim().isNotEmpty) {
+      phoneController.text = authPhone.trim();
+    } else {
+      _loadSavedBookingPhone();
+    }
+  }
+
+  Future<void> _loadSavedBookingPhone() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedPhone = prefs.getString('passenger_phone');
+    if (!mounted || savedPhone == null || savedPhone.trim().isEmpty) return;
+    if (phoneController.text.trim().isEmpty) {
+      setState(() {
+        phoneController.text = savedPhone.trim();
+      });
+    }
+  }
 
   @override
   void dispose() {
