@@ -1689,3 +1689,283 @@ ElevatedButton(
   );
 }
 }
+class MyBookingsPage extends StatefulWidget {
+  const MyBookingsPage({super.key});
+
+  @override
+  State<MyBookingsPage> createState() => _MyBookingsPageState();
+}
+
+class _MyBookingsPageState extends State<MyBookingsPage> {
+  final phoneController = TextEditingController();
+
+  List<Map<String, dynamic>> bookings = [];
+  bool loading = false;
+  bool searched = false;
+
+  Future<void> searchBookings() async {
+    final phone = phoneController.text.trim();
+
+    if (phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('يرجى إدخال رقم الهاتف'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      loading = true;
+      searched = true;
+      bookings = [];
+    });
+
+    try {
+      final snapshot =
+          await FirebaseDatabase.instance.ref('bookings').get();
+
+      final List<Map<String, dynamic>> results = [];
+
+      if (snapshot.exists) {
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+        data.forEach((key, value) {
+          final booking = Map<String, dynamic>.from(value);
+
+          if ((booking['phone'] ?? '').toString().trim() == phone) {
+            booking['bookingKey'] = key;
+            results.add(booking);
+          }
+        });
+      }
+
+      results.sort((a, b) {
+        final aTime = a['createdAt'] ?? 0;
+        final bTime = b['createdAt'] ?? 0;
+        return bTime.compareTo(aTime);
+      });
+
+      if (mounted) {
+        setState(() {
+          bookings = results;
+          loading = false;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        loading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('حدث خطأ أثناء البحث: $e'),
+        ),
+      );
+    }
+  }
+
+  String statusText(String status) {
+    switch (status) {
+      case 'confirmed':
+        return 'تم تأكيد الحجز';
+      case 'cancelled':
+        return 'تم رفض الحجز';
+      default:
+        return 'قيد المراجعة';
+    }
+  }
+
+  Color statusColor(String status) {
+    switch (status) {
+      case 'confirmed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.orange;
+    }
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('حجوزاتي'),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF1459D9),
+          foregroundColor: Colors.white,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'رقم الهاتف',
+                  hintText: 'أدخل رقم الهاتف المستخدم في الحجز',
+                  prefixIcon: Icon(Icons.phone),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: loading ? null : searchBookings,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1459D9),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: loading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          'بحث عن حجوزاتي',
+                          style: TextStyle(fontSize: 17),
+                        ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Expanded(
+                child: !searched
+                    ? const Center(
+                        child: Text(
+                          'أدخل رقم الهاتف للبحث عن حجوزاتك',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      )
+                    : bookings.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'لا توجد حجوزات بهذا الرقم',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: bookings.length,
+                            itemBuilder: (context, index) {
+                              final booking = bookings[index];
+
+                              final status =
+                                  (booking['status'] ?? 'pending').toString();
+
+                              final reason =
+                                  (booking['cancellationReason'] ?? '')
+                                      .toString();
+
+                              return Card(
+                                margin:
+                                    const EdgeInsets.only(bottom: 14),
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(16),
+                                ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'رقم الحجز: #${booking['bookingNumber'] ?? ''}',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 10),
+
+                                      Text(
+                                        '${booking['fromLocation'] ?? ''} → ${booking['toLocation'] ?? ''}',
+                                        style: const TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 8),
+
+                                      Text(
+                                        '📅 التاريخ: ${booking['date'] ?? ''}',
+                                      ),
+
+                                      const SizedBox(height: 5),
+
+                                      Text(
+                                        '🕐 الوقت: ${booking['time'] ?? ''} ${booking['period'] ?? ''}',
+                                      ),
+
+                                      const SizedBox(height: 12),
+
+                                      Container(
+                                        width: double.infinity,
+                                        padding:
+                                            const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: statusColor(status)
+                                              .withOpacity(.10),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          statusText(status),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color:
+                                                statusColor(status),
+                                            fontWeight:
+                                                FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+
+                                      if (status == 'cancelled' &&
+                                          reason.isNotEmpty) ...[
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          'سبب الرفض:',
+                                          style: const TextStyle(
+                                            fontWeight:
+                                                FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(reason),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
