@@ -58,6 +58,10 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  opacity: .9;
+}
+
 .refresh {
   background: #16a34a;
 }
@@ -139,6 +143,26 @@ button {
   font-size: 13px;
 }
 
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  flex: 1;
+  min-width: 140px;
+}
+
+.confirmBtn {
+  background: #16a34a;
+}
+
+.cancelBtn {
+  background: #dc2626;
+}
+
 @media(max-width:600px) {
 
   .container {
@@ -156,6 +180,15 @@ button {
 
   .order {
     padding: 16px;
+  }
+
+  .actions {
+    display: block;
+  }
+
+  .actions button {
+    width: 100%;
+    margin-bottom: 8px;
   }
 
 }
@@ -489,6 +522,12 @@ async function loadBookings() {
         );
 
 
+      const cancellationReason =
+        escapeHtml(
+          b.cancellationReason
+        );
+
+
       const card =
         document.createElement("div");
 
@@ -597,48 +636,118 @@ async function loadBookings() {
 
 
         <div class="row">
-  <span class="label">
-    📌 الحالة:
-  </span>
 
-  <span class="status">
-    ${status}
-  </span>
-</div>
+          <span class="label">
+            📌 الحالة:
+          </span>
+
+          <span class="status">
+            ${status}
+          </span>
+
+        </div>
 
 
+        ${
+          b.status === "cancelled"
+            ? `
+              <div class="row">
+                <span class="label">
+                  📝 سبب الإلغاء:
+                </span>
+                ${cancellationReason}
+              </div>
+            `
+            : ""
+        }
 
 
         <div class="row">
+
           <span class="label">
             🕒 تاريخ إنشاء الحجز:
           </span>
 
           ${createdAt}
+
         </div>
-<div class="actions">
 
-  <button
-    type="button"
-    class="confirmBtn"
-    data-key="${key}">
-    ✅ تأكيد الحجز
-  </button>
 
-  <button
-    type="button"
-    class="cancelBtn"
-    data-key="${key}">
-    ❌ إلغاء الحجز
-  </button>
+        <div class="actions">
 
-</div>
+          <button
+            type="button"
+            class="confirmBtn"
+            data-key="${key}">
+            ✅ تأكيد الحجز
+          </button>
+
+
+          <button
+            type="button"
+            class="cancelBtn"
+            data-key="${key}">
+            ❌ إلغاء الحجز
+          </button>
+
+        </div>
+
       `;
 
 
       orders.appendChild(card);
 
     });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ربط زر تأكيد الحجز
+    |--------------------------------------------------------------------------
+    */
+
+    document
+      .querySelectorAll(".confirmBtn")
+      .forEach(function(button) {
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            const key =
+              this.dataset.key;
+
+            confirmBooking(key);
+
+          }
+        );
+
+      });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ربط زر إلغاء الحجز
+    |--------------------------------------------------------------------------
+    */
+
+    document
+      .querySelectorAll(".cancelBtn")
+      .forEach(function(button) {
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            const key =
+              this.dataset.key;
+
+            cancelBooking(key);
+
+          }
+        );
+
+      });
 
 
   }
@@ -668,58 +777,84 @@ async function loadBookings() {
         ومن قواعد Realtime Database.
       </div>
     `;
-document.querySelectorAll('.cancelBtn').forEach(button => {
-  button.addEventListener('click', function () {
-    const key = this.dataset.key;
-    cancelBooking(key);
-  });
-});
+
   }
 
 }
 
+
+
+/*
+|--------------------------------------------------------------------------
+| تأكيد الحجز
+|--------------------------------------------------------------------------
+*/
+
 async function confirmBooking(bookingKey) {
 
-  if (!confirm("هل تريد تأكيد هذا الحجز؟")) {
+  if (
+    !confirm(
+      "هل تريد تأكيد هذا الحجز؟"
+    )
+  ) {
+
     return;
+
   }
+
 
   try {
 
-    const response = await fetch(
-      DATABASE_URL +
-      "/bookings/" +
-      bookingKey +
-      ".json",
-      {
-        method: "PATCH",
+    const response =
+      await fetch(
+        DATABASE_URL +
+        "/bookings/" +
+        bookingKey +
+        ".json",
+        {
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+          method: "PATCH",
 
-        body: JSON.stringify({
-          status: "confirmed"
-        })
-      }
-    );
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            status: "confirmed"
+          })
+
+        }
+      );
+
 
     if (!response.ok) {
+
       throw new Error(
-        "HTTP " + response.status
+        "HTTP " +
+        response.status
       );
+
     }
 
-    alert("تم تأكيد الحجز ✅");
+
+    alert(
+      "تم تأكيد الحجز ✅"
+    );
+
 
     await loadBookings();
 
-  } catch (error) {
+
+  }
+
+  catch(error) {
 
     console.error(
       "خطأ في تأكيد الحجز:",
       error
     );
+
 
     alert(
       "حدث خطأ أثناء تأكيد الحجز: " +
@@ -729,58 +864,112 @@ async function confirmBooking(bookingKey) {
   }
 
 }
+
+
+
+/*
+|--------------------------------------------------------------------------
+| إلغاء الحجز + سبب الإلغاء
+|--------------------------------------------------------------------------
+*/
+
 async function cancelBooking(bookingKey) {
 
-  const reason = prompt(
-    "اكتب سبب إلغاء الحجز:"
-  );
+  const reason =
+    prompt(
+      "اكتب سبب إلغاء الحجز:"
+    );
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | إلغاء العملية
+  |--------------------------------------------------------------------------
+  */
 
   if (reason === null) {
+
     return;
+
   }
 
-  if (reason.trim() === "") {
-    alert("يجب كتابة سبب الإلغاء.");
+
+  /*
+  |--------------------------------------------------------------------------
+  | منع السبب الفارغ
+  |--------------------------------------------------------------------------
+  */
+
+  if (
+    reason.trim() === ""
+  ) {
+
+    alert(
+      "يجب كتابة سبب الإلغاء."
+    );
+
     return;
+
   }
+
 
   try {
 
-    const response = await fetch(
-      DATABASE_URL +
-      "/bookings/" +
-      bookingKey +
-      ".json",
-      {
-        method: "PATCH",
+    const response =
+      await fetch(
+        DATABASE_URL +
+        "/bookings/" +
+        bookingKey +
+        ".json",
+        {
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+          method: "PATCH",
 
-        body: JSON.stringify({
-          status: "cancelled",
-          cancellationReason: reason.trim()
-        })
-      }
-    );
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            status: "cancelled",
+
+            cancellationReason:
+              reason.trim()
+
+          })
+
+        }
+      );
+
 
     if (!response.ok) {
+
       throw new Error(
-        "HTTP " + response.status
+        "HTTP " +
+        response.status
       );
+
     }
 
-    alert("تم إلغاء الحجز ❌");
+
+    alert(
+      "تم إلغاء الحجز ❌"
+    );
+
 
     await loadBookings();
 
-  } catch (error) {
+
+  }
+
+  catch(error) {
 
     console.error(
       "خطأ في إلغاء الحجز:",
       error
     );
+
 
     alert(
       "حدث خطأ أثناء إلغاء الحجز: " +
@@ -790,6 +979,9 @@ async function cancelBooking(bookingKey) {
   }
 
 }
+
+
+
 /*
 |--------------------------------------------------------------------------
 | تحميل أول مرة
@@ -798,14 +990,29 @@ async function cancelBooking(bookingKey) {
 
 loadBookings();
 
+
+
+/*
+|--------------------------------------------------------------------------
+| تحديث صامت
+|--------------------------------------------------------------------------
+*/
+
 async function silentRefresh() {
 
   try {
 
     const response =
       await fetch(
-        DATABASE_URL + "/bookings.json?t=" + Date.now()
+        DATABASE_URL +
+        "/bookings.json?t=" +
+        Date.now()
       );
+
+
+    if (!response.ok) {
+      return;
+    }
 
 
     const bookings =
@@ -816,7 +1023,9 @@ async function silentRefresh() {
       bookings === null ||
       typeof bookings !== "object"
     ) {
+
       return;
+
     }
 
 
@@ -825,15 +1034,24 @@ async function silentRefresh() {
 
 
     const currentCount =
-      document.querySelectorAll(".order").length;
+      document.querySelectorAll(
+        ".order"
+      ).length;
 
 
-    if (count !== currentCount) {
+    /*
+    |--------------------------------------------------------------------------
+    | إذا تغير عدد الحجوزات نعيد تحميلها
+    |--------------------------------------------------------------------------
+    */
 
-      loadBookings();
+    if (
+      count !== currentCount
+    ) {
+
+      await loadBookings();
 
     }
-
 
   }
 
@@ -848,6 +1066,8 @@ async function silentRefresh() {
 
 }
 
+
+
 /*
 |--------------------------------------------------------------------------
 | تحديث تلقائي كل 5 ثوانٍ
@@ -858,6 +1078,7 @@ setInterval(
   silentRefresh,
   5000
 );
+
 
 </script>
 
