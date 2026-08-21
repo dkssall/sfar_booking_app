@@ -1,97 +1,177 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>طلبات الرحلات</title>
+<title>طلبات الرحلات - أجّل</title>
 
 <style>
 
+* {
+  box-sizing: border-box;
+}
+
 body {
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f5f7fb;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+  color: #222;
 }
 
 .header {
-  background:#1d4ed8;
-  color:white;
-  padding:20px;
-  text-align:center;
+  background: #1d4ed8;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.header p {
+  margin: 0;
 }
 
 .container {
-  max-width:1000px;
-  margin:auto;
-  padding:25px;
+  max-width: 1000px;
+  margin: auto;
+  padding: 25px;
+}
+
+.top-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 button {
-  padding:12px 20px;
-  border:0;
-  border-radius:10px;
-  background:#1d4ed8;
-  color:white;
-  cursor:pointer;
-  font-size:16px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #1d4ed8;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  opacity: 0.9;
 }
 
 .refresh {
-  background:#16a34a;
+  background: #16a34a;
 }
 
 .message {
-  background:white;
-  padding:15px;
-  margin:20px 0;
-  border-radius:12px;
-  text-align:center;
-  font-weight:bold;
+  background: white;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 3px 12px rgba(0,0,0,.06);
 }
 
 .order {
-
-  background:white;
-  padding:20px;
-  margin-bottom:15px;
-  border-radius:15px;
-  box-shadow:0 3px 12px rgba(0,0,0,.08);
-
+  background: white;
+  padding: 20px;
+  margin-bottom: 18px;
+  border-radius: 15px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+  border-right: 5px solid #1d4ed8;
 }
-
 
 .order h2 {
-
-color:#1d4ed8;
-
+  color: #1d4ed8;
+  margin-top: 0;
+  margin-bottom: 18px;
 }
-
 
 .row {
-
-margin:8px 0;
-font-size:17px;
-
+  margin: 10px 0;
+  font-size: 17px;
+  line-height: 1.7;
 }
-
 
 .label {
-
-font-weight:bold;
-
+  font-weight: bold;
 }
 
+.booking-number {
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: bold;
+}
+
+.payment {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #f0fdf4;
+  color: #166534;
+  font-weight: bold;
+}
 
 .empty {
-
-background:white;
-padding:30px;
-text-align:center;
-border-radius:15px;
-
+  background: white;
+  padding: 35px;
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.06);
 }
 
+.error {
+  color: #dc2626;
+}
+
+.live {
+  color: #16a34a;
+}
+
+@media(max-width:600px) {
+
+  .container {
+    padding: 15px;
+  }
+
+  .order {
+    padding: 16px;
+  }
+
+  .row {
+    font-size: 16px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .top-buttons {
+    display: block;
+  }
+
+  .top-buttons button {
+    margin-bottom: 8px;
+  }
+
+}
 
 </style>
 
@@ -105,41 +185,36 @@ border-radius:15px;
 
 <h1>طلبات الرحلات 🚐</h1>
 
-<p>الحجوزات القادمة من التطبيق</p>
+<p>الحجوزات القادمة من تطبيق أجّل</p>
 
 </div>
-
 
 
 <div class="container">
 
 
-<button onclick="location.href='dashboard.html'">
-العودة للوحة التحكم
-</button>
+<div class="top-buttons">
 
+<button onclick="location.href='dashboard.html'">
+⬅️ العودة للوحة التحكم
+</button>
 
 <button class="refresh" onclick="loadBookings()">
-تحديث 🔄
+🔄 تحديث
 </button>
-
-
-
-<div id="message" class="message">
-
-جاري تحميل الطلبات...
 
 </div>
 
+
+<div id="message" class="message">
+جاري الاتصال بقاعدة البيانات...
+</div>
 
 
 <div id="orders"></div>
 
 
-
 </div>
-
-
 
 
 
@@ -151,325 +226,497 @@ from "https://www.gstatic.com/firebasejs/12.1.7/firebase-app.js";
 
 
 import {
-
-getDatabase,
-ref,
-get
-
+  getDatabase,
+  ref,
+  onValue
 }
-
 from "https://www.gstatic.com/firebasejs/12.1.7/firebase-database.js";
 
 
-
 import {
-
-getAuth,
-onAuthStateChanged
-
+  getAuth,
+  onAuthStateChanged
 }
-
 from "https://www.gstatic.com/firebasejs/12.1.7/firebase-auth.js";
-
 
 
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
+  apiKey: "AIzaSyD4Zn7o0BBEAc4K7E6aW3YLh9hXFDzglVA",
 
-authDomain: "ajel-booking.firebaseapp.com",
+  authDomain: "ajel-booking.firebaseapp.com",
 
-databaseURL:
-"https://ajel-booking-default-rtdb.firebaseio.com",
+  databaseURL:
+    "https://ajel-booking-default-rtdb.firebaseio.com",
 
-projectId:"ajel-booking",
+  projectId: "ajel-booking",
 
-storageBucket:
-"ajel-booking.firebasestorage.app",
+  storageBucket:
+    "ajel-booking.firebasestorage.app",
 
-messagingSenderId:"385816942991",
+  messagingSenderId: "385816942991",
 
-appId:
-"1:385816942991:web:cc9ea0bff26643547613fa"
+  appId:
+    "1:385816942991:web:cc9ea0bff26643547613fa"
 
 };
 
 
 
-
 const app = initializeApp(firebaseConfig);
 
-
 const database = getDatabase(app);
-
 
 const auth = getAuth(app);
 
 
-
 const message =
-document.getElementById("message");
-
+  document.getElementById("message");
 
 const orders =
-document.getElementById("orders");
+  document.getElementById("orders");
+
+
+let unsubscribeBookings = null;
 
 
 
+/*
+|--------------------------------------------------------------------------
+| حماية النصوص القادمة من Firebase
+|--------------------------------------------------------------------------
+*/
 
+function escapeHtml(value) {
 
-onAuthStateChanged(auth,(user)=>{
+  if (value === null || value === undefined) {
+    return "-";
+  }
 
-
-if(!user){
-
-message.textContent =
-"يجب تسجيل الدخول أولاً";
-
-return;
-
-}
-
-
-loadBookings();
-
-
-});
-
-
-
-
-
-
-async function loadBookings(){
-
-
-orders.innerHTML="";
-
-message.textContent =
-"جاري تحميل الطلبات...";
-
-
-
-try{
-
-
-const snapshot =
-await get(ref(database,"bookings"));
-
-
-
-if(!snapshot.exists()){
-
-
-message.textContent =
-"لا توجد حجوزات حالياً";
-
-
-return;
-
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 
 
+/*
+|--------------------------------------------------------------------------
+| تحويل الوقت
+|--------------------------------------------------------------------------
+*/
 
-const bookings =
-snapshot.val();
+function formatCreatedAt(value) {
 
+  if (!value) {
+    return "-";
+  }
 
+  let date;
 
-const keys =
-Object.keys(bookings);
+  if (typeof value === "number") {
 
+    date = new Date(value);
 
+  } else if (
+    typeof value === "object" &&
+    value[".sv"] === "timestamp"
+  ) {
 
-message.textContent =
-"عدد الحجوزات: " + keys.length;
+    return "الآن";
 
+  } else {
 
+    date = new Date(value);
 
-keys.reverse().forEach((key)=>{
+  }
 
+  if (isNaN(date.getTime())) {
+    return "-";
+  }
 
-const b = bookings[key];
-
-
-
-const card =
-document.createElement("div");
-
-
-card.className="order";
-
-
-
-card.innerHTML = `
-
-
-<h2>
-${b.fromLocation || ""}
- ← 
-${b.toLocation || ""}
-</h2>
-
-
-
-<div class="row">
-
-<span class="label">
-👤 المسافر:
-</span>
-
-${b.passengerName || "-"}
-
-</div>
-
-
-
-
-<div class="row">
-
-<span class="label">
-📱 الهاتف:
-</span>
-
-${b.phone || "-"}
-
-</div>
-
-
-
-
-
-<div class="row">
-
-<span class="label">
-📅 التاريخ:
-</span>
-
-${b.date || "-"}
-
-</div>
-
-
-
-
-
-<div class="row">
-
-<span class="label">
-⏰ الوقت:
-</span>
-
-${b.time || "-"}
-
-</div>
-
-
-
-
-
-<div class="row">
-
-<span class="label">
-💰 السعر:
-</span>
-
-${b.price || "-"}
-
-</div>
-
-
-
-
-
-<div class="row">
-
-<span class="label">
-💺 عدد الركاب:
-</span>
-
-${b.passengerCount || "-"}
-
-</div>
-
-
-
-
-
-<div class="row">
-
-<span class="label">
-💳 الدفع:
-</span>
-
-${b.paymentMethod || "-"}
-
-</div>
-
-
-
-
-
-<div class="row">
-
-<span class="label">
-📌 الحالة:
-</span>
-
-${b.status || "-"}
-
-</div>
-
-
-
-<div class="row">
-
-<span class="label">
-🔢 رقم الحجز:
-</span>
-
-${b.bookingNumber || "-"}
-
-</div>
-
-
-
-`;
-
-
-
-orders.appendChild(card);
-
-
-
-});
-
-
-
-}
-
-catch(error){
-
-
-console.error(error);
-
-
-message.textContent =
-"حدث خطأ: " + error.message;
-
+  return date.toLocaleString("ar-SA", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
 
 }
 
 
 
+/*
+|--------------------------------------------------------------------------
+| إنشاء بطاقة الحجز
+|--------------------------------------------------------------------------
+*/
+
+function createBookingCard(key, b) {
+
+  const card =
+    document.createElement("div");
+
+  card.className = "order";
+
+
+  const bookingNumber =
+    escapeHtml(b.bookingNumber || key);
+
+  const fromLocation =
+    escapeHtml(b.fromLocation);
+
+  const toLocation =
+    escapeHtml(b.toLocation);
+
+  const passengerName =
+    escapeHtml(b.passengerName);
+
+  const phone =
+    escapeHtml(b.phone);
+
+  const date =
+    escapeHtml(b.date);
+
+  const time =
+    escapeHtml(b.time);
+
+  const period =
+    escapeHtml(b.period);
+
+  const price =
+    escapeHtml(b.price);
+
+  const passengerCount =
+    escapeHtml(b.passengerCount);
+
+  const availableSeats =
+    escapeHtml(b.availableSeats);
+
+  const paymentMethod =
+    escapeHtml(b.paymentMethod);
+
+  const status =
+    escapeHtml(b.status || "pending");
+
+  const receiptAttached =
+    b.receiptAttached === true
+      ? "تم إرفاق الإيصال"
+      : "لا يوجد إيصال";
+
+  const createdAt =
+    formatCreatedAt(b.createdAt);
+
+
+
+  card.innerHTML = `
+
+    <div class="booking-number">
+      🔢 رقم الحجز:
+      ${bookingNumber}
+    </div>
+
+
+    <h2>
+      🚐 ${fromLocation}
+      ← →
+      ${toLocation}
+    </h2>
+
+
+    <div class="row">
+      <span class="label">
+        👤 المسافر:
+      </span>
+      ${passengerName}
+    </div>
+
+
+    <div class="row">
+      <span class="label">
+        📱 الهاتف:
+      </span>
+      ${phone}
+    </div>
+
+
+    <div class="row">
+      <span class="label">
+        📅 التاريخ:
+      </span>
+      ${date}
+    </div>
+
+
+    <div class="row">
+      <span class="label">
+        ⏰ الوقت:
+      </span>
+      ${time}
+    </div>
+
+
+    <div class="row">
+      <span class="label">
+        🕐 الفترة:
+      </span>
+      ${period}
+    </div>
+
+
+    <div class="row">
+      <span class="label">
+        💰 السعر:
+      </span>
+      ${price}
+    </div>
+
+
+    <div class="row">
+      <span class="label">
+        👥 عدد الركاب:
+      </span>
+      ${passengerCount}
+    </div>
+
+
+    <div class="row">
+      <span class="label">
+        💺 المقاعد المتاحة:
+      </span>
+      ${availableSeats}
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        💳 طريقة الدفع:
+      </span>
+
+      <span class="payment">
+        ${paymentMethod}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        🧾 الإيصال:
+      </span>
+
+      ${escapeHtml(receiptAttached)}
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        📌 حالة الحجز:
+      </span>
+
+      <span class="status">
+        ${status}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        🕒 وقت إنشاء الحجز:
+      </span>
+
+      ${escapeHtml(createdAt)}
+
+    </div>
+
+  `;
+
+
+  return card;
+
 }
 
+
+
+/*
+|--------------------------------------------------------------------------
+| عرض الحجوزات
+|--------------------------------------------------------------------------
+*/
+
+function renderBookings(bookings) {
+
+  orders.innerHTML = "";
+
+
+  if (!bookings) {
+
+    message.textContent =
+      "لا توجد حجوزات حالياً";
+
+    message.classList.remove("live");
+
+    orders.innerHTML = `
+      <div class="empty">
+        لا توجد حجوزات حتى الآن 📭
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  const keys =
+    Object.keys(bookings);
+
+
+  /*
+  ترتيب الحجوزات من الأحدث إلى الأقدم
+  */
+
+  keys.sort((a, b) => {
+
+    const timeA =
+      bookings[a]?.createdAt || 0;
+
+    const timeB =
+      bookings[b]?.createdAt || 0;
+
+    return timeB - timeA;
+
+  });
+
+
+  message.innerHTML =
+    `عدد الحجوزات: ${keys.length}
+     <span class="live">● مباشر</span>`;
+
+
+  keys.forEach((key) => {
+
+    const booking =
+      bookings[key];
+
+    const card =
+      createBookingCard(key, booking);
+
+    orders.appendChild(card);
+
+  });
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| تحميل الحجوزات والاستماع للتحديثات
+|--------------------------------------------------------------------------
+*/
+
+function loadBookings() {
+
+  message.textContent =
+    "جاري تحميل الحجوزات...";
+
+  orders.innerHTML = "";
+
+
+  const bookingsRef =
+    ref(database, "bookings");
+
+
+  if (unsubscribeBookings) {
+    unsubscribeBookings();
+  }
+
+
+  unsubscribeBookings =
+    onValue(
+
+      bookingsRef,
+
+      (snapshot) => {
+
+        if (snapshot.exists()) {
+
+          renderBookings(
+            snapshot.val()
+          );
+
+        } else {
+
+          renderBookings(null);
+
+        }
+
+      },
+
+      (error) => {
+
+        console.error(
+          "Firebase error:",
+          error
+        );
+
+        message.innerHTML =
+          `<span class="error">
+             حدث خطأ في قراءة الحجوزات:
+             ${escapeHtml(error.message)}
+           </span>`;
+
+      }
+
+    );
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| التحقق من تسجيل دخول الأدمن
+|--------------------------------------------------------------------------
+*/
+
+onAuthStateChanged(
+  auth,
+  (user) => {
+
+    if (!user) {
+
+      message.textContent =
+        "يجب تسجيل الدخول أولاً";
+
+      orders.innerHTML = `
+        <div class="empty">
+          يرجى تسجيل الدخول إلى لوحة الإدارة 🔐
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    loadBookings();
+
+  }
+);
 
 
 </script>
 
 
 </body>
+
 </html>
